@@ -1,0 +1,3 @@
+[submodule "sim/mist_sim_ws"]
+	path = sim/mist_sim_ws
+	url = git@git.mistlab.ca:mistlab/mist_sim_ws.git
