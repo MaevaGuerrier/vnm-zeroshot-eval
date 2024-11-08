@@ -79,7 +79,7 @@ function start_image()
                 --device-cgroup-rule="a *:* rmw" \
                 --volume=/tmp/.X11-unix:/tmp/.X11-unix -v ${XAUTH}:${XAUTH} \
                 -e XAUTHORITY=${XAUTH} \
-                --runtime nvidia --gpus=all \
+                --runtime nvidia --gpus all \
                 -v ${PWD}:/workspace \
                 -w=/workspace \
                 --name ${container_name} \
