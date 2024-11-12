@@ -1,10 +1,10 @@
 # PROJECT
 
 safeGNM/
-sim/mist_ws/*
+sim/*
 
 *.bag
-src/visualnav-transformer/deployment/model_weights/*
+src/*
 
 # ROS GITINGORE FROM https://github.com/github/gitignore/blob/main/ROS.gitignore
 
