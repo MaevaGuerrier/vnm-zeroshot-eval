@@ -19,3 +19,7 @@ pip install -e train/
 cd /workspace/src/visualnav-transformer/deployment/src
 
 ```
+
+## Updating submodule 
+
+At root of your git folder simpy use the command `git submodule foreach git pull`
