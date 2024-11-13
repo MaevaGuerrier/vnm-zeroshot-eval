@@ -1,5 +1,5 @@
 # FROM img_name:tag
-FROM limo_ros1:dev 
+FROM turtlebot3_ros1:dev 
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -15,20 +15,4 @@ RUN conda env create -f /tmp/deployment_environment.yaml
 
 RUN conda init && \
     echo "conda activate vint_deployment" >> ~/.bashrc
-    # pip install -e train/
-
-# RUN echo "source /opt/ros/noetic/setup.bash " >> ~/.bashrc && \
-#     echo "source /workspace/catkin_ws/devel/setup.bash " >> ~/.bashrc
-
-# ENTRYPOINT ["/tmp/setup.sh"] 
-
-# RUN git clone https://github.com/YDLIDAR/YDLidar-SDK.git &&\
-#     mkdir -p YDLidar-SDK/build && \
-#     cd YDLidar-SDK/build &&\
-#     cmake ..&&\
-#     make &&\
-#     make install &&\
-#     cd .. &&\
-#     pip install . &&\
-#     cd .. && rm -r YDLidar-SDK 
 
