@@ -2,6 +2,7 @@
 
 safeGNM/
 sim/*
+dataset/*
 
 *.bag
 src/*
