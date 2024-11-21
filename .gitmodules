@@ -6,3 +6,6 @@
 	path = src/visualnav-transformer
 	url = git@github.com:MaevaGuerrier/visualnav-transformer.git
 	branch = main
+[submodule "src/LoRA-ViT"]
+	path = src/LoRA-ViT
+	url = git@github.com:MaevaGuerrier/LoRA-ViT.git
