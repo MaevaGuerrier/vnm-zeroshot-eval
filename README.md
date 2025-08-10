@@ -1,6 +1,15 @@
-Inside docker 
+# Inside docker 
 
-cd mist_ws
+**ONLY INSIDE DOCKER OR LOSE THINGS**
+
+cd /opt/ros/noetic
+source devel.bash
+
+
+
+# other
+
+cd mist_ws/
 catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3
 source devel/setup.bash
 

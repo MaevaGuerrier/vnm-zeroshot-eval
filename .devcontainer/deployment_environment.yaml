@@ -1,18 +1,13 @@
 name: vint_deployment
 channels:
-- pytorch
 - conda-forge
 dependencies:
-- python=3.8.5
-- cudatoolkit=11.0
-- torchvision
 - numpy
 - matplotlib
 - pyyaml
 # - rospkg
 - pip:
   - wandb
-  - torch
   - einops
   - vit-pytorch
   - rospkg

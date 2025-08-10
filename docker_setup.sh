@@ -72,8 +72,7 @@ function start_image()
     # xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
     # chmod 777 $XAUTH
     
-    docker run --network=host \
-                -d \
+    docker run -it --network=host \
                 -v /dev:/dev \
                 --privileged \
                 --device-cgroup-rule="a *:* rmw" \
@@ -82,15 +81,14 @@ function start_image()
                 --runtime nvidia --gpus all \
                 -v ${PWD}:/workspace \
                 -w=/workspace \
-                --name ${container_name} \
                 -e LIBGL_ALWAYS_SOFTWARE="1"\
                 -e DISPLAY=${DISPLAY} \
-                --restart=always ${image_tag} /bin/bash -c "echo 'Hello World'; sleep infinity"
+                ${image_tag} /bin/bash
     
     
     
-    echo -e "${_GREEN} Container start success!${_NORMAL}"
-    echo -e "${_GREEN} Now you can now connect to the container by running command 7 ${_NORMAL}"
+    # echo -e "${_GREEN} Container start success!${_NORMAL}"
+    # echo -e "${_GREEN} Now you can now connect to the container by running command 7 ${_NORMAL}"
 
 }
 

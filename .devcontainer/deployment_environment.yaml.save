@@ -1,0 +1,25 @@
+name: vint_deployment
+channels:
+- pytorch
+- conda-forge
+dependencies:
+- python=3.8.5
+- tor
+- numpy
+- matplotlib
+- pyyaml
+# - rospkg
+- pip:
+  - wandb
+  - torch
+  - einops
+  - vit-pytorch
+  - rospkg
+  - defusedxml
+  - huggingface_hub==0.23.5
+  - efficientnet_pytorch
+  - warmup_scheduler
+  - diffusers==0.11.1
+  - "--editable=git+https://github.com/real-stanford/diffusion_policy.git#egg=diffusion_policy"
+  - prettytable
+  - opencv-python

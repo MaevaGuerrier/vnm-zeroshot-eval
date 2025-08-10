@@ -1,18 +1,52 @@
 # FROM img_name:tag
-FROM turtlebot3_ros1:dev 
+FROM nvcr.io/nvidia/l4t-pytorch:r35.2.1-pth2.0-py3
 
-ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+    && apt-get install -qq -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git \
+    libssl-dev \
+    libusb-1.0-0-dev \
+    pkg-config \
+    libgtk-3-dev \
+    libglfw3-dev \
+    libgl1-mesa-dev \
+    libglu1-mesa-dev \    
+    curl \	
+    libusb-1.0-0 \
+    udev \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    swig \
+    wget \
+    software-properties-common \
+    python3-pip \
+    nano
 
-# Install miniconda
-ENV CONDA_DIR /opt/conda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda 
-ENV PATH=$CONDA_DIR/bin:$PATH
+RUN apt-get update && sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list' && \
+    wget http://packages.ros.org/ros.key -O - | apt-key add - 
+  
 
-COPY ./deployment_environment.yaml /tmp/deployment_environment.yaml  
-# RUN wget https://github.com/MaevaGuerrier/visualnav-transformer/blob/main/deployment/deployment_environment.yaml && \
-RUN conda env create -f /tmp/deployment_environment.yaml
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-noetic-ros-base \
+    tmux ros-noetic-teleop-twist-keyboard \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN conda init && \
-    echo "conda activate vint_deployment" >> ~/.bashrc
 
+RUN pip install numpy matplotlib==3.5.1 pyyaml wandb \
+        einops \
+        vit-pytorch \
+  		rospkg      \
+  		defusedxml  \
+  		huggingface_hub==0.23.5 \
+		efficientnet_pytorch \
+		warmup_scheduler \
+		diffusers==0.11.1 \
+                prettytable
+
+RUN git clone https://github.com/real-stanford/diffusion_policy.git &&\
+    pip install -e diffusion_policy/
+
+COPY ./setup.sh /tmp/setup.sh
