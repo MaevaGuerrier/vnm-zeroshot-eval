@@ -42,3 +42,6 @@ At root of your git folder simpy use the command `git submodule foreach git pull
 *Prequisite: topomap created*
 
 `./navigate.sh '--dir <topo_dir>'`
+
+
+## Visualize

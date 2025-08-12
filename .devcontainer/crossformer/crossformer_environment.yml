@@ -1,0 +1,21 @@
+name: crossformer_env
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.10
+  - numpy=1.24.3
+  - scipy=1.10.1
+  - pip
+  
+  - pip:
+    - "typing_extensions>=4.9.0"
+    - "tensorflow>=2.15.0,<2.17.0"
+    - "jax==0.4.20" 
+    - "jaxlib==0.4.20"
+    - "transformers"
+    - "huggingface-hub"
+    - "pillow"
+    - "opencv-python"
+    - "tqdm"

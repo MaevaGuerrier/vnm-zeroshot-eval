@@ -8,19 +8,19 @@ _RED='\e[31m'
 clear
 
 CHOOSE=1
+MODEL=1
 image_tag=safe_gmn:dev
 container_name=safe_gmn
 
-# function CHOOSE_ROBOT()
-# {
-#     echo -e "${_BOLD}--------------------------${_NORMAL}"
-#     echo -e "\e[1;10H Choose robot type and ros version${_NORMAL}"
-#     echo -e "${_GREEN} 1.Limo ros 1${_NORMAL}"
-#     echo -e "${_GREEN} 2.Limo ros 2${_NORMAL}"
-#     echo -e "${_GREEN} 3.Unitree A1${_NORMAL}"
-#     echo -e "${_BOLD}--------------------------${_NORMAL}"
-#     echo -n "Your chose(1-3):"
-# }
+function CHOOSE_MODEL()
+{
+    echo -e "${_BOLD}--------------------------${_NORMAL}"
+    echo -e "\e[1;10H Choose Model${_NORMAL}"
+    echo -e "${_GREEN} 1.VinT/NoMaD/GNM${_NORMAL}"
+    echo -e "${_GREEN} 2.Crossformer${_NORMAL}"
+    echo -e "${_BOLD}--------------------------${_NORMAL}"
+    echo -n "Your chose(1-2):"
+}
 
 
 function PRINT_MENU()
@@ -45,7 +45,7 @@ function prepare()
 }
 
 function BUILD_IMAGE() {
-    Docker_file=.devcontainer/
+    Docker_file=.devcontainer/${model_type}
     # if [ $# -gt 2 ]
     # then
     #     Docker_file=$1
@@ -54,7 +54,7 @@ function BUILD_IMAGE() {
     # then
     #     Docker_file=$1
     # fi
-    docker build ${Docker_file} -t ${image_tag}
+    docker build --network=host ${Docker_file} -t ${image_tag}
 }
 
 function start_image()
@@ -156,6 +156,30 @@ function delete_container()
 {
     docker rm -f ${container_name}
 }
+
+
+
+CHOOSE_MODEL
+
+read MODEL
+
+case "${MODEL}" in
+    1)
+    model_type=gnm
+    image_tag=safe_gmn:dev
+    container_name=safe_gmn
+    ;;
+    2)
+    model_type=crossformer
+    image_tag=crossformer:dev
+    container_name=crossformer
+    ;;
+
+
+esac
+
+clear
+
 
 PRINT_MENU
 
