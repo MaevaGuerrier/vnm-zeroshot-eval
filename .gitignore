@@ -7,6 +7,14 @@ dataset/*
 *.bag
 src/*
 
+# ROS2 WORKSPACE 
+
+ros2_ws/
+
+# Diffusion policy 
+
+diffusion_policy/
+
 # ROS GITINGORE FROM https://github.com/github/gitignore/blob/main/ROS.gitignore
 
 devel/
@@ -296,6 +304,3 @@ Vagrantfile
 
 *.save
 
-# ROS2 WORKSPACE 
-
-ros2_ws/
