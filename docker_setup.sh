@@ -19,6 +19,7 @@ function CHOOSE_MODEL()
     echo -e "${_GREEN} 1.VinT/NoMaD/GNM${_NORMAL}"
     echo -e "${_GREEN} 2.NaviD${_NORMAL}"
     echo -e "${_GREEN} 3.Crossformer${_NORMAL}"
+    echo -e "${_GREEN} 4.Remotevisualizer${_NORMAL}"
     echo -e "${_BOLD}--------------------------${_NORMAL}"
     echo -n "Your chose(1-3):"
 }
@@ -179,6 +180,11 @@ case "${MODEL}" in
     model_type=crossformer
     image_tag=crossformer:dev
     container_name=crossformer
+    ;;
+    4)
+    model_type=remotevisualizer
+    image_tag=remotevisualizer:dev
+    container_name=remotevisualizer
 
 
 
