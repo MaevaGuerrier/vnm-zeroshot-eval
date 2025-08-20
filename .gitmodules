@@ -9,3 +9,6 @@
 [submodule "src/LoRA-ViT"]
 	path = src/LoRA-ViT
 	url = git@github.com:MaevaGuerrier/LoRA-ViT.git
+[submodule "ViNT_NaviD"]
+	path = ViNT_NaviD
+	url = git@github.com:MaevaGuerrier/ViNT_NaviD.git

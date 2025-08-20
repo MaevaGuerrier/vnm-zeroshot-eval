@@ -303,4 +303,5 @@ pyenv
 Vagrantfile
 
 *.save
-
+.packages_*
+.catkin_tools

@@ -17,9 +17,10 @@ function CHOOSE_MODEL()
     echo -e "${_BOLD}--------------------------${_NORMAL}"
     echo -e "\e[1;10H Choose Model${_NORMAL}"
     echo -e "${_GREEN} 1.VinT/NoMaD/GNM${_NORMAL}"
-    echo -e "${_GREEN} 2.Crossformer${_NORMAL}"
+    echo -e "${_GREEN} 2.NaviD${_NORMAL}"
+    echo -e "${_GREEN} 3.Crossformer${_NORMAL}"
     echo -e "${_BOLD}--------------------------${_NORMAL}"
-    echo -n "Your chose(1-2):"
+    echo -n "Your chose(1-3):"
 }
 
 
@@ -65,6 +66,7 @@ function start_image()
     # fi
 
     # give docker root user X11 permissions
+    # should do this while running on desktop for visualizing purposes
     xhost +local:root
     XAUTH=~/.Xauthority
     # enable SSH X11 forwarding inside container (https://stackoverflow.com/q/48235040)
@@ -72,9 +74,10 @@ function start_image()
     # xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
     # chmod 777 $XAUTH
     
-    docker run -it --network=host \
+    docker run -it --rm --network=host \
                 -v /dev:/dev \
                 --privileged \
+                --name ${container_name}_1 \
                 --device-cgroup-rule="a *:* rmw" \
                 --volume=/tmp/.X11-unix:/tmp/.X11-unix -v ${XAUTH}:${XAUTH} \
                 -e XAUTHORITY=${XAUTH} \
@@ -83,10 +86,8 @@ function start_image()
                 -w=/workspace \
                 -e LIBGL_ALWAYS_SOFTWARE="1"\
                 -e DISPLAY=${DISPLAY} \
-                ${image_tag} /bin/bash
-    
-    
-    
+                ${image_tag}
+        
     # echo -e "${_GREEN} Container start success!${_NORMAL}"
     # echo -e "${_GREEN} Now you can now connect to the container by running command 7 ${_NORMAL}"
 
@@ -96,7 +97,7 @@ function attach_terminal()
 {
     # give docker root user X11 permissions
     # docker exec -it ${container_name} /bin/bash
-    docker exec -it ${container_name} /bin/bash -c "/tmp/setup.sh bash"
+    docker exec -it ${container_name} /bin/bash 
 }
 
 function backup_container()
@@ -165,15 +166,20 @@ read MODEL
 
 case "${MODEL}" in
     1)
-    model_type=gnm
-    image_tag=safe_gmn:dev
-    container_name=safe_gmn
+    model_type=NoMad
+    image_tag=nomad:dev
+    container_name=nomad
     ;;
     2)
+    model_type=NaviD
+    image_tag=navid:dev
+    container_name=navid
+    ;;
+    3)
     model_type=crossformer
     image_tag=crossformer:dev
     container_name=crossformer
-    ;;
+
 
 
 esac
@@ -217,4 +223,3 @@ case "${CHOOSE}" in
     ;;
 
 esac
-
