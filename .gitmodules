@@ -12,3 +12,9 @@
 [submodule "ViNT_NaviD"]
 	path = ViNT_NaviD
 	url = git@github.com:MaevaGuerrier/ViNT_NaviD.git
+[submodule "robo-gym"]
+	path = robo-gym
+	url = git@github.com:MaevaGuerrier/robo-gym.git
+[submodule "robo-gym-robot-servers"]
+	path = ros1_ws/src/robo-gym-robot-servers
+	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
