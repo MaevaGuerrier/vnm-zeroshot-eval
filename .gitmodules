@@ -1,7 +1,7 @@
-# [submodule "sim/mist_sim_ws"]
-# 	path = sim/mist_sim_ws
-# 	url = git@git.mistlab.ca:mistlab/mist_sim_ws.git
-# 	branch = main
+[submodule "sim/mist_sim_ws"]
+	path = sim/mist_sim_ws
+	url = http://git.mistlab.ca/mistlab/mist_sim_ws.git
+	branch = main
 [submodule "src/visualnav-transformer"]
 	path = src/visualnav-transformer
 	url = git@github.com:MaevaGuerrier/visualnav-transformer.git
@@ -22,3 +22,9 @@
 	path = ros1_ws/src/robo-gym-robot-servers
 	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
 	branch = main
+[submodule "diffusion_policy"]
+	path = diffusion_policy
+	url = git@github.com:MaevaGuerrier/diffusion_policy.git
+	branch = main
+
+
