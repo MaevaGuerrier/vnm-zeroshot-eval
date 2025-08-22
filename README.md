@@ -80,3 +80,13 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
 ```
+
+
+# TODO 
+
+
+```
+pip install diffusion_policy/ --target /workspace/.packages_nomad/ --upgrade
+```
+
+pip install scipy --target /workspace/.packages_nomad --index-url https://pypi.org/simple/
