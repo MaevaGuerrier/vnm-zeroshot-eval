@@ -56,7 +56,7 @@ function BUILD_IMAGE() {
     # then
     #     Docker_file=$1
     # fi
-    docker build --network=host ${Docker_file} -t ${image_tag}
+    docker build --build-arg CACHE_BUST=$(date +%s)  ${Docker_file} -t ${image_tag}
 }
 
 function start_image()

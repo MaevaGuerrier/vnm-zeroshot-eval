@@ -1,6 +1,5 @@
 #!/bin/bash
-
-source ~/.bashrc
+# source ~/.bashrc
 
 
 exec "$@"
