@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential cmake git libssl-dev libusb-1.0-0-dev pkg-config \
     libgtk-3-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev \
     libasio-dev curl udev apt-transport-https ca-certificates swig \
-    wget software-properties-common python3-pip nano \
+    wget software-properties-common python3-pip nano python3-grpcio\
     && rm -rf /var/lib/apt/lists/*
 
 # Add ROS 2 repo key and source
@@ -26,6 +26,7 @@ RUN apt-get update && apt-get install -y \
     ros-humble-ament-cmake \
     python3-colcon-common-extensions \
     python3-argcomplete \
+    ros-humble-usb-cam \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Miniconda
