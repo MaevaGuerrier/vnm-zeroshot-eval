@@ -59,9 +59,9 @@ COPY requirements.txt /tmp/requirements.txt
 RUN /opt/conda/bin/conda run -n crossformer_env pip install --no-deps flax==0.7.5
 RUN /opt/conda/bin/conda run -n crossformer_env pip install -v -r /tmp/requirements.txt
 
-RUN git clone https://github.com/rail-berkeley/crossformer.git
-RUN cd crossformer &&\
-    /opt/conda/bin/conda run -n crossformer_env pip install -e .
+# RUN git clone https://github.com/rail-berkeley/crossformer.git
+# RUN cd crossformer &&\
+#     /opt/conda/bin/conda run -n crossformer_env pip install -e .
 
 # Copy setup script
 ARG CACHE_BUST=2
