@@ -11,8 +11,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgtk-3-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev \
     libasio-dev curl udev apt-transport-https ca-certificates swig \
     wget software-properties-common python3-pip nano \
-    python3-grpcio python3-rospy \
+    python3-grpc-tools \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install robo_gym_server_modules
 
 # Add ROS 2 repo key and source
 RUN mkdir -p /usr/share/keyrings && \
@@ -66,7 +68,7 @@ RUN apt-get update && apt-get install -y \
 #     /opt/conda/bin/conda run -n crossformer_env pip install -e .
 
 # Copy setup script
-ARG CACHE_BUST=2
+ARG CACHE_BUST=3
 COPY ./setup.sh /tmp/setup.sh
 RUN chmod +x /tmp/setup.sh
 RUN echo "source /tmp/setup.sh" >> /root/.bashrc
