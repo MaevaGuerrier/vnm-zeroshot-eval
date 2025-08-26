@@ -64,7 +64,7 @@ RUN pip install --no-cache-dir --index-url https://pypi.org/simple matplotlib==3
 #     pip install -e diffusion_policy/
 
 # DUMMY VAR TO MAKE CHANGES ONLY HERE CHANGE THE NUMBER
-ARG R=3
+ARG CACHE_BUST=1
 COPY ./setup.sh /tmp/setup.sh
 
 RUN chmod +x /tmp/setup.sh

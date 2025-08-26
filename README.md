@@ -44,6 +44,16 @@ At root of your git folder simpy use the command `git submodule foreach git pull
 `./navigate.sh '--dir <topo_dir>'`
 
 
+# ROS2 
+
+```
+source /opt/ros/humble/setup.bash
+cd ros2_ws
+chmod +x src/robo-gym-robot-servers/bunker_robot_server/bunker_robot_server/robot_server.py
+colcon build --symlink-install --event-handlers console_direct+
+source install/setup.bash
+```
+
 ## Visualize
 
 
@@ -80,3 +90,30 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
 ```
+
+**pydantic** for usb_cam ros2 package need to be install this way:
+
+ROS 2 Humble expects Pydantic 1.x.
+
+Check your Pydantic version: 
+
+```
+pip show pydantic
+```
+
+If you see Version: 2.x, that’s the problem.
+
+Downgrade to v1:
+
+```
+pip install "pydantic<2" --force-reinstall
+```
+
+# TODO 
+
+
+```
+pip install diffusion_policy/ --target /workspace/.packages_nomad/ --upgrade
+```
+
+pip install scipy --target /workspace/.packages_nomad --index-url https://pypi.org/simple/
