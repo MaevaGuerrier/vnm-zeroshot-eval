@@ -12,7 +12,6 @@ pre-commit==3.3.3
 transformers>=4.34.1
 tensorflow_hub>=0.14.0
 tensorflow_datasets==4.9.2
-flax==0.7.5
 dlimp @ git+https://github.com/kvablack/dlimp@5edaa4691567873d495633f2708982b42edf1972
 huggingface_hub
 rail_tpu_utils

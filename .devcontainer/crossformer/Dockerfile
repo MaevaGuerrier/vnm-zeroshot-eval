@@ -58,7 +58,7 @@ RUN /opt/conda/bin/conda run -n crossformer_env pip install --upgrade pip setupt
 RUN /opt/conda/bin/conda run -n crossformer_env pip install -v /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
 COPY requirements.txt /tmp/requirements.txt
 RUN /opt/conda/bin/conda run -n crossformer_env pip install --no-deps flax==0.7.5
-RUN /opt/conda/bin/conda run -n crossformer_env pip install -v -r /tmp/requirements.txt
+# RUN /opt/conda/bin/conda run -n crossformer_env pip install -v -r /tmp/requirements.txt
 
 # RUN git clone https://github.com/rail-berkeley/crossformer.git
 # RUN cd crossformer &&\
