@@ -160,6 +160,7 @@ IN DOCKERFILE
 
 ```
 ros-humble-rmw-zenoh-cpp 
+ros-humble-demo-nodes-cpp 
 ```
 
 
