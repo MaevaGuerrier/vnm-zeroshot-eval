@@ -1,5 +1,8 @@
 # FROM img_name:tag
-FROM osrf/ros:noetic-desktop-full
+ARG ros_version=humble
+
+
+FROM osrf/ros:${ros_version}-desktop-full
 
 # Setup environment variables for noninteractive installs
 ENV DEBIAN_FRONTEND=noninteractive
@@ -8,8 +11,8 @@ RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main"
     && curl -sSL 'https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc' | apt-key add -
 
 # DUMMY VAR TO MAKE CHANGES ONLY HERE CHANGE THE NUMBER
-ARG R=2
-COPY ./setup.sh /tmp/setup.sh
+ARG CACHE_BUST=4
+COPY ./setup.sh /tmp/setup.sh 
 
 RUN chmod +x /tmp/setup.sh
 ENTRYPOINT ["/tmp/setup.sh"]
