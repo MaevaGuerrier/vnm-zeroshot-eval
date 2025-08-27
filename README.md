@@ -1,3 +1,12 @@
+# INIT
+
+**setup submodules**
+
+```bash
+git submodule update --init
+git submodule foreach git pull origin main
+```
+
 # Inside docker 
 
 **ONLY INSIDE DOCKER OR LOSE THINGS**
@@ -44,6 +53,16 @@ At root of your git folder simpy use the command `git submodule foreach git pull
 `./navigate.sh '--dir <topo_dir>'`
 
 
+# ROS2 
+
+```
+source /opt/ros/humble/setup.bash
+cd ros2_ws
+chmod +x src/robo-gym-robot-servers/bunker_robot_server/bunker_robot_server/robot_server.py
+colcon build --symlink-install --event-handlers console_direct+
+source install/setup.bash
+```
+
 ## Visualize
 
 
@@ -57,7 +76,10 @@ We are using rviz to visualize the image data.
 4. Run navigate.sh on robot
 5. Select the topics you want to see on rviz in local pc, **in our case: /topoplan/subgoal, /topoplan/goal_img and /topoplan/closest_node_img**
 
-**TROUBLESHOOTING: Topic is visible but no incoming image data** ([source](https://robotics.stackexchange.com/questions/54802/ros-remote-master-can-see-topics-but-no-data))
+
+# Troubleshooting
+
+**Topic is visible but no incoming image data** ([source](https://robotics.stackexchange.com/questions/54802/ros-remote-master-can-see-topics-but-no-data))
 
 
 1. Add the robot ip to your local computer in /etc/hosts (in our case inside docker container). 
@@ -80,3 +102,97 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 
 ```
+
+**pydantic** for usb_cam ros2 package need to be install this way:
+
+ROS 2 Humble expects Pydantic 1.x.
+
+Check your Pydantic version: 
+
+```
+pip show pydantic
+```
+
+If you see Version: 2.x, that’s the problem.
+
+Downgrade to v1:
+
+```
+pip install "pydantic<2" --force-reinstall
+```
+
+**fatal: No url found for submodule path 'path' in .gitmodules**
+```bash
+git rm --cached {path}                                                  
+rm -rf .git/modules/{path}
+```
+
+
+# TODO 
+
+
+```
+pip install diffusion_policy/ --target /workspace/.packages_nomad/ --upgrade
+```
+
+pip install scipy --target /workspace/.packages_nomad --index-url https://pypi.org/simple/
+
+
+
+
+
+
+# trying to have ros2 ip setup 
+
+root@mae-rog-14:/workspace/robo-gym/robo_gym# export ROS_DOMAIN_ID=20
+root@mae-rog-14:/workspace/robo-gym/robo_gym# export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+root@mae-rog-14:/workspace/robo-gym/robo_gym# export ROS_DISCOVERY_SERVER=192.168.1.178:11811
+root@mae-rog-14:/workspace/robo-gym/robo_gym# export FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/super_client_configuration_file.xml
+root@mae-rog-14:/workspace/robo-gym/robo_gym# ip route add 192.168.186.0/24 via 192.168.1.178
+
+
+# Zenoh 
+
+
+**on BOTH local and remote**
+
+IN DOCKERFILE 
+
+```
+ros-humble-rmw-zenoh-cpp 
+ros-humble-demo-nodes-cpp 
+```
+
+
+IN SETUP.SH 
+
+```
+export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+export ROS_DOMAIN_ID=20
+unset ROS_DISCOVERY_SERVER
+
+```
+
+
+
+SEE  https://github.com/eclipse-zenoh/zenoh LINUX DEBIAN 
+
+```
+echo "deb [signed-by=/etc/apt/keyrings/zenoh-public-key.gpg] https://download.eclipse.org/zenoh/debian-repo/ /" | tee /etc/apt/sources.list.d/zenoh.list > /dev/null
+
+
+curl -L https://download.eclipse.org/zenoh/debian-repo/zenoh-public-key | gpg --dearmor --yes --output /etc/apt/keyrings/zenoh-public-key.gpg
+
+apt-get update
+
+apt-get install zenoh # IGNORE ERROR CHECK THAT zenohd --help works
+
+```
+
+**On local computer**
+
+zenohd -l tcp/192.168.1.178:7447
+
+**on robot**
+
+zenohd -e tcp/192.168.1.216:7447
