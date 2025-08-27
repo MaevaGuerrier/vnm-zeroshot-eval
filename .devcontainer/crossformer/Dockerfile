@@ -10,8 +10,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential cmake git libssl-dev libusb-1.0-0-dev pkg-config \
     libgtk-3-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev \
     libasio-dev curl udev apt-transport-https ca-certificates swig \
-    wget software-properties-common python3-pip nano \
+    wget software-properties-common python3-pip python3.10 python3.10-dev python3.10-distutils nano python3-grpcio tmux\
     && rm -rf /var/lib/apt/lists/*
+
+
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 \
+&& update-alternatives --set python /usr/bin/python3.10
 
 # Add ROS 2 repo key and source
 RUN mkdir -p /usr/share/keyrings && \
@@ -26,45 +31,56 @@ RUN apt-get update && apt-get install -y \
     ros-humble-ament-cmake \
     python3-colcon-common-extensions \
     python3-argcomplete \
+    ros-humble-usb-cam \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Miniconda
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh -O /tmp/miniconda.sh
-RUN bash /tmp/miniconda.sh -b -p /opt/conda
-RUN rm /tmp/miniconda.sh
-ENV PATH="/opt/conda/bin:${PATH}"
+# RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh -O /tmp/miniconda.sh
+# RUN bash /tmp/miniconda.sh -b -p /opt/conda
+# RUN rm /tmp/miniconda.sh
+# ENV PATH="/opt/conda/bin:${PATH}"
 
-RUN /opt/conda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
-    /opt/conda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
-RUN /opt/conda/bin/conda config --remove channels defaults || true && \
-    /opt/conda/bin/conda config --add channels conda-forge && \
-    /opt/conda/bin/conda config --set channel_priority strict
-# Create Conda environment
+# RUN /opt/conda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main && \
+#     /opt/conda/bin/conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+# RUN /opt/conda/bin/conda config --remove channels defaults || true && \
+#     /opt/conda/bin/conda config --add channels conda-forge && \
+#     /opt/conda/bin/conda config --set channel_priority strict
+# # Create Conda environment
 
 
-COPY crossformer_environment.yml /tmp/environment.yml
-RUN conda env create -f /tmp/environment.yml
+# COPY crossformer_environment.yml /tmp/environment.yml
+# RUN conda env create -f /tmp/environment.yml
 
-# copy the activation command to bashrc
-RUN echo "source /opt/conda/etc/profile.d/conda.sh && conda activate crossformer_env" >> ~/.bashrc
+# # copy the activation command to bashrc
+# RUN echo "source /opt/conda/etc/profile.d/conda.sh && conda activate crossformer_env" >> ~/.bashrc
 
 
 
 # Copy requirements.txt for pip
 # Download the NVIDIA TensorFlow wheel
-RUN wget https://developer.download.nvidia.com/compute/redist/jp/v60/tensorflow/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl -O /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
-RUN /opt/conda/bin/conda run -n crossformer_env pip install --upgrade pip setuptools wheel
-RUN /opt/conda/bin/conda run -n crossformer_env pip install -v /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
-COPY requirements.txt /tmp/requirements.txt
-RUN /opt/conda/bin/conda run -n crossformer_env pip install --no-deps flax==0.7.5
-RUN /opt/conda/bin/conda run -n crossformer_env pip install -v -r /tmp/requirements.txt
+# RUN wget https://developer.download.nvidia.com/compute/redist/jp/v60/tensorflow/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl -O /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
+# RUN /opt/conda/bin/conda run -n crossformer_env pip install --upgrade pip setuptools wheel
+# RUN /opt/conda/bin/conda run -n crossformer_env pip install -v /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
+# COPY requirements.txt /tmp/requirements.txt
+# RUN /opt/conda/bin/conda run -n crossformer_env pip install --no-deps flax==0.7.5
+# RUN /opt/conda/bin/conda run -n crossformer_env pip install -v -r /tmp/requirements.txt
+# RUN /opt/conda/bin/conda run -n crossformer_env pip install "pydantic<2" --force-reinstall
 
-RUN git clone https://github.com/rail-berkeley/crossformer.git
-RUN cd crossformer &&\
-    /opt/conda/bin/conda run -n crossformer_env pip install -e .
+
+RUN wget https://developer.download.nvidia.com/compute/redist/jp/v60/tensorflow/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl -O /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
+# RUN pip install --upgrade pip setuptools wheel packaging
+RUN pip install -v /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-deps flax==0.7.5
+RUN pip install -v -r /tmp/requirements.txt
+# RUN pip install "pydantic<2" --force-reinstall
+
+# RUN git clone https://github.com/rail-berkeley/crossformer.git
+# RUN cd crossformer &&\
+#     /opt/conda/bin/conda run -n crossformer_env pip install -e .
 
 # Copy setup script
-ARG CACHE_BUST=2
+ARG CACHE_BUST=3
 COPY ./setup.sh /tmp/setup.sh
 RUN chmod +x /tmp/setup.sh
 RUN echo "source /tmp/setup.sh" >> /root/.bashrc
@@ -73,3 +89,4 @@ RUN echo "source /tmp/setup.sh" >> /root/.bashrc
 ENTRYPOINT ["/tmp/setup.sh"]
 CMD ["bash", "-c", "source ~/.bashrc && exec bash"]
 # CMD ["bash","-l"]
+
