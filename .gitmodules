@@ -33,7 +33,7 @@
 	path = Depth-Anything-V2
 	url = git@github.com:MaevaGuerrier/Depth-Anything-V2.git
 	branch = main
-
-
-
-
+[submodule "crossformer"]
+	path = crossformer
+	url = git@github.com:MaevaGuerrier/crossformer.git
+	branch = main
