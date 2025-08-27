@@ -4,6 +4,8 @@ safeGNM/
 sim/*
 datasets/*
 
+crossformer/assets/chunk/
+
 *.bag
 src/*
 
