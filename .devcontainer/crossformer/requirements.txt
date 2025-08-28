@@ -17,3 +17,6 @@ huggingface_hub
 rail_tpu_utils
 pydantic<2
 robo-gym-server-modules
+msgpack
+optax
+rich>=11.1
