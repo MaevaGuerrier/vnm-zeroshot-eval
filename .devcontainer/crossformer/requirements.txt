@@ -7,6 +7,7 @@ jax==0.4.20
 jaxlib==0.4.20
 distrax==0.1.5
 ml_collections>=0.1.0
+setuptools>=65,<68
 moviepy>=1.0.3
 pre-commit==3.3.3
 transformers>=4.34.1
@@ -15,8 +16,19 @@ tensorflow_datasets==4.9.2
 dlimp @ git+https://github.com/kvablack/dlimp@5edaa4691567873d495633f2708982b42edf1972
 huggingface_hub
 rail_tpu_utils
-pydantic<2
 robo-gym-server-modules
 msgpack
 optax
 rich>=11.1
+scipy==1.10.1
+matplotlib==3.5.1
+imageio
+moviepy
+pillow
+pydantic<2
+opencv-python
+plotly
+absl-py
+typing_extensions
+rospkg
+defusedxml
