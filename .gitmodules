@@ -37,3 +37,6 @@
 	path = crossformer
 	url = git@github.com:MaevaGuerrier/crossformer.git
 	branch = main
+[submodule "CARE"]
+	path = CARE
+	url = git@github.com:MaevaGuerrier/CARE.git
