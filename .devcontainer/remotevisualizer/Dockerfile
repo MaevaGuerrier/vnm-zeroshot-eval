@@ -1,5 +1,5 @@
 # FROM img_name:tag
-ARG ros_version=humble
+ARG ros_version=noetic
 
 
 FROM osrf/ros:${ros_version}-desktop-full
