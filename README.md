@@ -196,3 +196,41 @@ zenohd -l tcp/192.168.1.178:7447
 **on robot**
 
 zenohd -e tcp/192.168.1.216:7447
+
+
+
+# Baselines 
+
+
+
+# CARE 
+
+## Installation 
+
+
+Issues with requ file of UniDepth uses:
+
+```
+setuptools 
+einops>=0.7.0
+gradio
+h5py>=3.10.0
+huggingface-hub>=0.22.0
+imageio
+matplotlib
+numpy>=2.0.0
+opencv-python
+pandas
+pillow>=10.2.0
+protobuf>=4.25.3
+scipy
+tables
+tabulate
+termcolor
+timm
+tqdm
+trimesh
+triton # USE DIFFERENT URL https://download.pytorch.org/whl/cu118
+torchaudio>=2.4.0
+xformers>=0.0.26
+```

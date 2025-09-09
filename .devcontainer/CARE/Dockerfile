@@ -1,10 +1,18 @@
 # FROM img_name:tag
-FROM dustynv/l4t-pytorch:2.2-r35.4.1
+# FROM dustynv/l4t-pytorch:2.2-r35.4.1
+FROM dustynv/l4t-pytorch:r36.2.0
+
+
+
+# CARE https://github.com/airlab-sogang/CARE
+# Requires Ubuntu 20.04 or 22.04 | CUDA 11.8 compatible GPU
+# For Jetson its best to have a docker that has pytorch ready to go, doing a pip install torch won't enable GPU on Jetson
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get install -qq -y --no-install-recommends \
     build-essential \
+    apt-utils \
     cmake \
     git \
     libssl-dev \
@@ -19,49 +27,38 @@ RUN apt-get update \
     udev \
     apt-transport-https \
     ca-certificates \
-    curl \
     swig \
     wget \
     software-properties-common \
     apt-utils \
-    python3-grpcio \
     python3-scipy \
     psmisc \
     vim-gtk \ 
     libcppunit-dev \
     python3-pip \
-    nano
-
-RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' \
-    && curl -sSL 'https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc' | apt-key add -
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ros-noetic-ros-base \
     tmux \
-    python3-catkin-tools \
-    ros-noetic-cv-bridge \
-    python3-rosdep \
-    ros-noetic-teleop-twist-keyboard \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir --index-url https://pypi.org/simple matplotlib==3.5.1 \
-                robo-gym-server-modules \ 
-                pyyaml \
-                einops \
-                vit-pytorch \
-  		        rospkg \
-  		        defusedxml \
-                protobuf==3.20 \
-  		        huggingface_hub==0.23.5 \
-		        efficientnet_pytorch \
-		        warmup_scheduler \
-		        diffusers==0.11.1 \
-                numpy==1.24.4 \
-                prettytable
+         
 
-# diffusion policy for NoMad 
-# RUN git clone https://github.com/real-stanford/diffusion_policy.git &&\
-#     pip install -e diffusion_policy/
+# Add ROS 2 repo key and source
+RUN mkdir -p /usr/share/keyrings && \
+    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+        | gpg --dearmor > /usr/share/keyrings/ros-archive-keyring.gpg
+RUN echo "deb [arch=arm64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" \
+    > /etc/apt/sources.list.d/ros2.list
+
+# Install ROS 2 humble base packages
+
+RUN apt-get update && apt-get install -y \
+    ros-humble-ros-base \
+    ros-humble-ament-cmake \
+    python3-colcon-common-extensions \
+    python3-argcomplete \
+    ros-humble-usb-cam \
+    && rm -rf /var/lib/apt/lists/*
+
+
 
 # DUMMY VAR TO MAKE CHANGES ONLY HERE CHANGE THE NUMBER
 ARG CACHE_BUST=1
