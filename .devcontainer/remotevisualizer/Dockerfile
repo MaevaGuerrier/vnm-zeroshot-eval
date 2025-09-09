@@ -5,7 +5,7 @@ ARG ros_version=noetic
 FROM osrf/ros:${ros_version}-desktop-full
 
 # Setup environment variables for noninteractive installs
-ENV DEBIAN_FRONTEND=noninteractive
+# ENV DEBIAN_FRONTEND=noninteractive
 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' \
     && curl -sSL 'https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc' | apt-key add -
@@ -15,5 +15,7 @@ ARG CACHE_BUST=4
 COPY ./setup.sh /tmp/setup.sh 
 
 RUN chmod +x /tmp/setup.sh
+RUN echo "source /tmp/setup.sh" >> /root/.bashrc
 ENTRYPOINT ["/tmp/setup.sh"]
+CMD ["bash","-l"]
 

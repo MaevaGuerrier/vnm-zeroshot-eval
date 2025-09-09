@@ -50,15 +50,16 @@ function prepare()
 
 function BUILD_IMAGE() {
     Docker_file=.devcontainer/${model_type}
-    # if [ $# -gt 2 ]
-    # then
-    #     Docker_file=$1
-    #     image_tag=$2
-    # elif [ $# -gt 1 ] 
-    # then
-    #     Docker_file=$1
-    # fi
-    docker build --build-arg CACHE_BUST=$(date +%s)  ${Docker_file} -t ${image_tag}
+    ARCH=$(uname -m)
+    if [ "$ARCH" = "x86_64" ]; then
+        BUILDARCH=amd64
+    elif [ "$ARCH" = "aarch64" ]; then
+        BUILDARCH=arm64
+    else
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+    fi
+    docker build --build-arg CACHE_BUST=$(date +%s) --build-arg TARGETARCH=$BUILDARCH ${Docker_file} -t ${image_tag}
 }
 
 function start_image()
