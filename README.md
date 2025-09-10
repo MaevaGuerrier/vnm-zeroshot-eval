@@ -135,6 +135,9 @@ rm -rf .git/modules/{path}
 pip install diffusion_policy/ --target /workspace/.packages_nomad/ --upgrade
 ```
 
+if 
+WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<pip._vendor.urllib3.connection.HTTPSConnection object at 0xffffaa8717e0>: Failed to establish a new connection: [Errno 113] No route to host')': 
+
 pip install scipy --target /workspace/.packages_nomad --index-url https://pypi.org/simple/
 
 
@@ -233,4 +236,32 @@ trimesh
 triton # USE DIFFERENT URL https://download.pytorch.org/whl/cu118
 torchaudio>=2.4.0
 xformers>=0.0.26
+```
+
+
+**IMPORTANT** diffusion policy did not setup the file setup.py that enable our usage *pip install /workspace/CARE/diffusion_policy/ --target /workspace/.packages_care/* to work properly. **TODO delete submodule since we already have them in SafeGNM**
+Use *_```pip install /workspace/diffusion_policy/ --target /workspace/.packages_care/```** instead.
+
+
+TODO: get rid of wandb
+
+### Unidepth
+
+Get rid of triton in req file Unidepth and install it with --extra-index-url https://download.pytorch.org/whl/cu118
+
+```
+gradio
+h5py>=3.10.0
+huggingface-hub>=0.22.0
+imageio
+opencv-python
+pandas
+pillow>=10.2.0
+protobuf>=4.25.3
+tables
+tabulate
+termcolor
+timm
+tqdm
+trimesh
 ```

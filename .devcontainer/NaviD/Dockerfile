@@ -57,7 +57,8 @@ RUN pip install matplotlib==3.5.1 \
 		        efficientnet_pytorch \
 		        warmup_scheduler \
 		        diffusers==0.11.1 \
-                prettytable 
+                prettytable \
+                cv-bridge
 
 
 # diffusion policy for NoMad 

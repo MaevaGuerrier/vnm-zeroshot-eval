@@ -56,6 +56,7 @@ RUN apt-get update && apt-get install -y \
     python3-colcon-common-extensions \
     python3-argcomplete \
     ros-humble-usb-cam \
+    libasio-dev \ 
     && rm -rf /var/lib/apt/lists/*
 
 
