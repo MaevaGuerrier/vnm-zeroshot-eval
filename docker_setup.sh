@@ -99,7 +99,7 @@ function attach_terminal()
 {
     # give docker root user X11 permissions
     # docker exec -it ${container_name} /bin/bash
-    docker exec -it ${container_name} /bin/bash 
+    docker exec -it ${container_name}_1 /bin/bash 
 }
 
 function backup_container()
