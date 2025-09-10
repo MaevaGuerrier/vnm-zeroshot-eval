@@ -21,8 +21,9 @@ function CHOOSE_MODEL()
     echo -e "${_GREEN} 3.Crossformer${_NORMAL}"
     echo -e "${_GREEN} 4.Remotevisualizer${_NORMAL}"
     echo -e "${_GREEN} 5.test_crossformer${_NORMAL}"
+    echo -e "${_GREEN} 6.CARE${_NORMAL}"
     echo -e "${_BOLD}--------------------------${_NORMAL}"
-    echo -n "Your chose(1-3):"
+    echo -n "Your chose(1-6):"
 }
 
 
@@ -49,15 +50,16 @@ function prepare()
 
 function BUILD_IMAGE() {
     Docker_file=.devcontainer/${model_type}
-    # if [ $# -gt 2 ]
-    # then
-    #     Docker_file=$1
-    #     image_tag=$2
-    # elif [ $# -gt 1 ] 
-    # then
-    #     Docker_file=$1
-    # fi
-    docker build --build-arg CACHE_BUST=$(date +%s)  ${Docker_file} -t ${image_tag}
+    ARCH=$(uname -m)
+    if [ "$ARCH" = "x86_64" ]; then
+        BUILDARCH=amd64
+    elif [ "$ARCH" = "aarch64" ]; then
+        BUILDARCH=arm64
+    else
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+    fi
+    docker build --build-arg CACHE_BUST=$(date +%s) --build-arg TARGETARCH=$BUILDARCH ${Docker_file} -t ${image_tag}
 }
 
 function start_image()
@@ -99,7 +101,7 @@ function attach_terminal()
 {
     # give docker root user X11 permissions
     # docker exec -it ${container_name} /bin/bash
-    docker exec -it ${container_name}_1 /bin/bash 
+    docker exec -it ${container_name} /bin/bash 
 }
 
 function backup_container()
@@ -191,7 +193,12 @@ case "${MODEL}" in
     model_type=test_crossformer
     image_tag=test_crossformer:dev
     container_name=test_crossformer
-
+    ;;
+    6)
+    model_type=CARE
+    image_tag=care:dev
+    container_name=care
+    ;;
 
 esac
 

@@ -310,3 +310,4 @@ Vagrantfile
 *.save
 .packages_*
 .catkin_tools
+depth_anything_ros/

@@ -1,36 +1,41 @@
 # Base image
-FROM nvcr.io/nvidia/l4t-base:r36.2.0
+# FROM nvcr.io/nvidia/l4t-base:r36.2.0
+FROM osrf/ros:humble-desktop-full
+
+
 
 # Non-interactive
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PATH="/opt/conda/bin:${PATH}"
+# ENV PATH="/opt/conda/bin:${PATH}"
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential cmake git libssl-dev libusb-1.0-0-dev pkg-config \
-    libgtk-3-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev \
-    libasio-dev curl udev apt-transport-https ca-certificates swig \
-    wget software-properties-common python3-pip nano \
-    python3-grpc-tools \
-    && rm -rf /var/lib/apt/lists/*
+# # Install system dependencies
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     build-essential cmake git libssl-dev libusb-1.0-0-dev pkg-config \
+#     libgtk-3-dev libglfw3-dev libgl1-mesa-dev libglu1-mesa-dev \
+#     libasio-dev curl udev apt-transport-https ca-certificates swig \
+#     wget software-properties-common python3-pip nano \
+#     python3-grpc-tools \
+#     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install robo_gym_server_modules
+# RUN apt-get update && apt-get install -y --no-install-recommends \
 
-# Add ROS 2 repo key and source
-RUN mkdir -p /usr/share/keyrings && \
-    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-        | gpg --dearmor > /usr/share/keyrings/ros-archive-keyring.gpg
-RUN echo "deb [arch=arm64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" \
-    > /etc/apt/sources.list.d/ros2.list
+# RUN pip3 install robo_gym_server_modules
+
+# # Add ROS 2 repo key and source
+# RUN mkdir -p /usr/share/keyrings && \
+#     curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+#         | gpg --dearmor > /usr/share/keyrings/ros-archive-keyring.gpg
+# RUN echo "deb [arch=arm64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" \
+#     > /etc/apt/sources.list.d/ros2.list
 
 # Install ROS 2 Humble base packages
-RUN apt-get update && apt-get install -y \
-    ros-humble-ros-base \
-    ros-humble-ament-cmake \
-    python3-colcon-common-extensions \
-    python3-argcomplete \
-    ros-humble-usb-cam \
-    && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y \
+#     ros-humble-ros-base \
+#     ros-humble-ament-cmake \
+#     python3-colcon-common-extensions \
+#     python3-argcomplete \
+#     ros-humble-usb-cam \
+#     && rm -rf /var/lib/apt/lists/*
 
 # # Install Miniconda
 # RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh -O /tmp/miniconda.sh
@@ -68,7 +73,7 @@ RUN apt-get update && apt-get install -y \
 #     /opt/conda/bin/conda run -n crossformer_env pip install -e .
 
 # Copy setup script
-ARG CACHE_BUST=3
+ARG CACHE_BUST=4
 COPY ./setup.sh /tmp/setup.sh
 RUN chmod +x /tmp/setup.sh
 RUN echo "source /tmp/setup.sh" >> /root/.bashrc

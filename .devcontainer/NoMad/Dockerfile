@@ -44,6 +44,38 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-noetic-teleop-twist-keyboard \
     && rm -rf /var/lib/apt/lists/*
 
+####### ros2 for brige nav2 ros ###################
+
+# # Install curl and gnupg2 first
+# RUN apt-get update && apt-get install -y curl gnupg2 lsb-release \
+#     && rm -rf /var/lib/apt/lists/*
+
+# # Add ROS 2 apt repository
+# RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+#     -o /usr/share/keyrings/ros-archive-keyring.gpg \
+#  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
+# http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
+#     > /etc/apt/sources.list.d/ros2-latest.list
+
+# RUN apt-get update && apt-get install -y ros-foxy-ros-base \
+#     && rm -rf /var/lib/apt/lists/*
+
+
+##########################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 RUN pip install --no-cache-dir --index-url https://pypi.org/simple matplotlib==3.5.1 \
                 robo-gym-server-modules \ 
                 pyyaml \
