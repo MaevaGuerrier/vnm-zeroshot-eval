@@ -17,6 +17,7 @@
 [submodule "robo-gym-robot-servers"]
 	path = ros1_ws/src/robo-gym-robot-servers
 	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
+	branch = main
 [submodule "ros2_ws/src/robo-gym-robot-servers"]
 	path = ros2_ws/src/robo-gym-robot-servers
 	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
@@ -36,3 +37,4 @@
 [submodule "CARE"]
 	path = CARE
 	url = git@github.com:MaevaGuerrier/CARE.git
+	branch = main
