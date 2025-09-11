@@ -5,7 +5,7 @@
 [submodule "robo-gym-robot-servers"]
 	path = ros1_ws/src/robo-gym-robot-servers
 	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
-	branch = nomad
+	branch = main
 [submodule "diffusion_policy"]
 	path = diffusion_policy
 	url = git@github.com:MaevaGuerrier/diffusion_policy.git
