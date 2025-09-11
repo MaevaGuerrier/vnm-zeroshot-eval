@@ -12,19 +12,6 @@ MODEL=1
 image_tag=safe_gmn:dev
 container_name=safe_gmn
 
-function CHOOSE_MODEL()
-{
-    echo -e "${_BOLD}--------------------------${_NORMAL}"
-    echo -e "\e[1;10H Choose Model${_NORMAL}"
-    echo -e "${_GREEN} 1.VinT/NoMaD/GNM${_NORMAL}"
-    echo -e "${_GREEN} 2.NaviD${_NORMAL}"
-    echo -e "${_GREEN} 3.Crossformer${_NORMAL}"
-    echo -e "${_GREEN} 4.Remotevisualizer${_NORMAL}"
-    echo -e "${_GREEN} 5.test_crossformer${_NORMAL}"
-    echo -e "${_GREEN} 6.CARE${_NORMAL}"
-    echo -e "${_BOLD}--------------------------${_NORMAL}"
-    echo -n "Your chose(1-6):"
-}
 
 
 function PRINT_MENU()
@@ -164,45 +151,10 @@ function delete_container()
 
 
 
-CHOOSE_MODEL
 
-read MODEL
-
-case "${MODEL}" in
-    1)
-    model_type=NoMad
-    image_tag=nomad:dev
-    container_name=nomad
-    ;;
-    2)
-    model_type=NaviD
-    image_tag=navid:dev
-    container_name=navid
-    ;;
-    3)
-    model_type=crossformer
-    image_tag=crossformer:dev
-    container_name=crossformer
-    ;;
-    4)
-    model_type=remotevisualizer
-    image_tag=remotevisualizer:dev
-    container_name=remotevisualizer
-    ;;
-    5)
-    model_type=test_crossformer
-    image_tag=test_crossformer:dev
-    container_name=test_crossformer
-    ;;
-    6)
-    model_type=CARE
-    image_tag=care:dev
-    container_name=care
-    ;;
-
-esac
-
-clear
+model_type=NoMad
+image_tag=nomad:dev
+container_name=nomad
 
 
 PRINT_MENU
