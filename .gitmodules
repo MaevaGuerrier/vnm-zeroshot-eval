@@ -1,7 +1,3 @@
-[submodule "sim/mist_sim_ws"]
-	path = sim/mist_sim_ws
-	url = http://git.mistlab.ca/mistlab/mist_sim_ws.git
-	branch = main
 [submodule "src/visualnav-transformer"]
 	path = src/visualnav-transformer
 	url = git@github.com:MaevaGuerrier/visualnav-transformer.git
@@ -10,18 +6,10 @@
 	path = ViNT_NaviD
 	url = git@github.com:MaevaGuerrier/ViNT_NaviD.git
 	branch = main
-[submodule "robo-gym"]
-	path = robo-gym
-	url = git@github.com:MaevaGuerrier/robo-gym.git
-	branch = main
 [submodule "robo-gym-robot-servers"]
 	path = ros1_ws/src/robo-gym-robot-servers
 	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
 	branch = main
-[submodule "ros2_ws/src/robo-gym-robot-servers"]
-	path = ros2_ws/src/robo-gym-robot-servers
-	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
-	branch = ros2
 [submodule "diffusion_policy"]
 	path = diffusion_policy
 	url = git@github.com:MaevaGuerrier/diffusion_policy.git
@@ -29,10 +17,6 @@
 [submodule "Depth-Anything-V2"]
 	path = Depth-Anything-V2
 	url = git@github.com:MaevaGuerrier/Depth-Anything-V2.git
-	branch = main
-[submodule "crossformer"]
-	path = crossformer
-	url = git@github.com:MaevaGuerrier/crossformer.git
 	branch = main
 [submodule "CARE"]
 	path = CARE
