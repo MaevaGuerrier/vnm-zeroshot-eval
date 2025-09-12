@@ -26,9 +26,36 @@ imageio
 moviepy
 pillow
 pydantic<2
-opencv-python
+opencv-python-headless
 plotly
 absl-py
 typing_extensions
 rospkg
 defusedxml
+black
+flake8
+wget
+tqdm
+kornia
+torchmetrics
+pytorch_lightning
+pytest
+scikit-image
+scikit-learn
+seaborn
+pandas
+pytictac
+torch_geometric
+omegaconf
+optuna
+neptune
+fast-slic
+hydra-core
+prettytable
+termcolor
+pydensecrf @ git+https://github.com/lucasb-eyer/pydensecrf.git
+liegroups @ git+https://github.com/mmattamala/liegroups.git
+
+
+    #      torch==2.1.0 torchvision --extra-index-url https://download.pytorch.org/whl/cu121 \
+    # && pip3 install --no-cache-dir \

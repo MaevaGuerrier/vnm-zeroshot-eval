@@ -22,8 +22,9 @@ function CHOOSE_MODEL()
     echo -e "${_GREEN} 4.Remotevisualizer${_NORMAL}"
     echo -e "${_GREEN} 5.test_crossformer${_NORMAL}"
     echo -e "${_GREEN} 6.CARE${_NORMAL}"
+    echo -e "${_GREEN} 7.SafeGNM${_NORMAL}"
     echo -e "${_BOLD}--------------------------${_NORMAL}"
-    echo -n "Your chose(1-6):"
+    echo -n "Your chose(1-7):"
 }
 
 
@@ -199,7 +200,11 @@ case "${MODEL}" in
     image_tag=care:dev
     container_name=care
     ;;
-
+    7)
+    model_type=SafeGNM
+    image_tag=safegnm:dev
+    container_name=safegnm
+    ;;
 esac
 
 clear
