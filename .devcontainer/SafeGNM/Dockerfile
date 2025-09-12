@@ -3,6 +3,7 @@
 #####################
 FROM nvidia/cuda:12.3.2-runtime-ubuntu20.04 as base
 
+
 ARG ROS_VERSION="noetic"
 
 # ==
@@ -35,48 +36,19 @@ RUN apt update \
         python3-osrf-pycommon \
     && rm -f "/etc/ros/rosdep/sources.list.d/20-default.list" \
     && rosdep init \
-    && rosdep update 
-
-
-# ==
-# Remove cache and extra files
-# ==
-RUN rm -rf /var/lib/apt/lists/* && apt clean
-
-
-# ==
-# Enable dialog again
-# ==
-ARG DEBIAN_FRONTEND=dialog
-
-# ==
-# Run bash
-# ==
-CMD ["/bin/bash"]
-WORKDIR /root/catkin_ws
-
-
-###############################################################
-# Development image
-# This adds display access and simulation support
-###############################################################
-
-FROM base as dev
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN mkdir -p /root/catkin_ws/src \
-    && source /opt/ros/noetic/setup.bash \
-    && source "/root/.bashrc" \
-    && cd /root/catkin_ws && catkin build \
-    && apt-get update \
-    && apt-get install -y \
-        ros-noetic-jackal-simulator \
-        ros-noetic-jackal-desktop \
-        ros-noetic-teleop-twist-keyboard \
-        ros-noetic-rqt-robot-steering \
+    && rosdep update \
     && rm -rf /var/lib/apt/lists/*
 
-RUN echo "source /root/catkin_ws/devel/setup.bash" >> ~/.bashrc
 
-ENV DEBIAN_FRONTEND=dialog
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install -v -r /tmp/requirements.txt
+
+
+ARG CACHE_BUST=1
+COPY ./setup.sh /tmp/setup.sh
+RUN chmod +x /tmp/setup.sh
+RUN echo "source /tmp/setup.sh" >> /root/.bashrc
+
+# Default entrypoint
+ENTRYPOINT ["/tmp/setup.sh"]
+CMD ["bash", "-c", "source ~/.bashrc && exec bash"]
