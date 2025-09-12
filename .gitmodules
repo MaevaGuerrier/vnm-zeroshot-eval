@@ -2,3 +2,22 @@
 	path = src/visualnav-transformer
 	url = git@github.com:MaevaGuerrier/visualnav-transformer.git
 	branch = main
+[submodule "ros/ros1_ws/src/robo-gym-robot-servers"]
+	path = ros/ros1_ws/src/robo-gym-robot-servers
+	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
+	branch = main
+[submodule "ros/ros2_ws/src/robo-gym-robot-servers"]
+	path = ros/ros2_ws/src/robo-gym-robot-servers
+	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
+	branch = ros2
+[submodule "third_party/diffusion_policy"]
+	path = third_party/diffusion_policy
+	url = git@github.com:MaevaGuerrier/diffusion_policy.git
+	branch = main
+[submodule "third_party/wild_visual_navigation"]
+	path = third_party/wild_visual_navigation
+	url = git@github.com:MaevaGuerrier/wild_visual_navigation.git
+	branch = main
+[submodule "third_party/self_supervised_segmentation"]
+	path = third_party/self_supervised_segmentation
+	url = git@github.com:leggedrobotics/self_supervised_segmentation.git
