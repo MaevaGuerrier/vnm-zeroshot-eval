@@ -1,0 +1,254 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <!--
+    Main xacro macro definition of the "Gazebo robot" model.
+
+    This wraps the model of the real robot and adds all elements and parameters
+    required by Gazebo.
+
+    It also adds the gazebo_ros_control plugin.
+
+    NOTE: this is NOT a URDF. It cannot directly be loaded by consumers
+    expecting a flattened '.urdf' file. See the top-level '.xacro' for that
+    (but note: that .xacro must still be processed by the xacro command).
+
+    For use in '.launch' files: use one of the 'load_urX.launch' convenience
+    launch files.
+
+    NOTE: this Gazebo model makes use of the same set of parameter files as the
+    main xacro macro (in ur_description). It is therefor possible to use the
+    kinematic calibration exported from a REAL UR robot. Please refer to the
+    ur_macro.xacro in ur_description for more information about this.
+
+    Main author of the migration to yaml configs: Ludovic Delval.
+
+    Contributors to previous versions (in no particular order):
+
+     - Felix Messmer
+     - Kelsey Hawkins
+     - Shaun Edwards
+     - Alexander Bubeck
+     - Nadia Hammoudeh Garcia
+     - G. vd. Hoorn
+     - Dave Niewinski
+     - Andy Zelenak
+     - Miguel Prada
+     - Mathias Luedtke
+     - Hans-Joachim Krauch
+     - Felix Exner
+  -->
+
+
+  <!-- Definition of the main macro -->
+  <xacro:macro name="ur_robot_gazebo" params="
+    prefix
+    name
+    tf_prefix
+    parent
+    *origin
+    joint_limits_parameters_file
+    kinematics_parameters_file
+    physical_parameters_file
+    visual_parameters_file
+    generate_ros2_control_tag:=true
+    transmission_hw_interface:=hardware_interface/PositionJointInterface
+    safety_limits:=false
+    safety_pos_margin:=0.15
+    safety_k_position:=20
+    use_fake_hardware:=false
+    fake_sensor_commands:=false
+    sim_gazebo:=false
+    sim_ignition:=false
+    headless_mode:=false
+    initial_positions:=${dict(shoulder_pan_joint=0.0,shoulder_lift_joint=-1.57,elbow_joint=0.0,wrist_1_joint=-1.57,wrist_2_joint=0.0,wrist_3_joint=0.0)}
+    use_tool_communication:=false
+    tool_voltage:=0
+    tool_parity:=0
+    tool_baud_rate:=115200
+    tool_stop_bits:=1
+    tool_rx_idle_chars:=1.5
+    tool_tx_idle_chars:=3.5
+    tool_device_name:=/tmp/ttyURtial
+    tool_tcp_port:=54321
+    robot_ip:=0.0.0.0
+    script_filename:=to_be_filled_by_ur_robot_driver
+    output_recipe_filename:=to_be_filled_by_ur_robot_driver
+    input_recipe_filename:=to_be_filled_by_ur_robot_driver
+    reverse_port:=50001
+    script_sender_port:=50002
+    reverse_ip:=0.0.0.0
+    script_command_port:=50004
+    trajectory_port:=50003
+    non_blocking_read:=true
+    keep_alive_count:=2"
+  >
+    <!--
+      Import the xacro macro for the REAL robot (which we'll augment with Gazebo
+      specific elements in the wrapper macro below).
+
+      NOTE: this imports the '_macro.xacro' from ur_description, as that contains
+      the definitions for the real robot.
+    -->
+    <xacro:include filename="$(find ur_description)/urdf/ur_macro.xacro"/>
+
+
+    <!-- Instantiate model for the REAL robot. -->
+    <xacro:ur_robot
+      name="$(arg name)"
+      tf_prefix="$(arg tf_prefix)"
+      parent="world"
+      joint_limits_parameters_file="$(arg joint_limit_params)"
+      kinematics_parameters_file="$(arg kinematics_params)"
+      physical_parameters_file="$(arg physical_params)"
+      visual_parameters_file="$(arg visual_params)"
+      transmission_hw_interface="$(arg transmission_hw_interface)"
+      safety_limits="$(arg safety_limits)"
+      safety_pos_margin="$(arg safety_pos_margin)"
+      safety_k_position="$(arg safety_k_position)"
+      use_fake_hardware="$(arg use_fake_hardware)"
+      fake_sensor_commands="$(arg fake_sensor_commands)"
+      sim_gazebo="$(arg sim_gazebo)"
+      sim_ignition="$(arg sim_ignition)"
+      headless_mode="$(arg headless_mode)"
+      use_tool_communication="$(arg use_tool_communication)"
+      tool_voltage="$(arg tool_voltage)"
+      tool_parity="$(arg tool_parity)"
+      tool_baud_rate="$(arg tool_baud_rate)"
+      tool_stop_bits="$(arg tool_stop_bits)"
+      tool_rx_idle_chars="$(arg tool_rx_idle_chars)"
+      tool_tx_idle_chars="$(arg tool_tx_idle_chars)"
+      tool_device_name="$(arg tool_device_name)"
+      tool_tcp_port="$(arg tool_tcp_port)"
+      robot_ip="$(arg robot_ip)"
+      script_filename="$(arg script_filename)"
+      output_recipe_filename="$(arg output_recipe_filename)"
+      input_recipe_filename="$(arg input_recipe_filename)"
+      reverse_ip="$(arg reverse_ip)"
+      script_command_port="$(arg script_command_port)"
+      reverse_port="$(arg reverse_port)"
+      script_sender_port="$(arg script_sender_port)"
+      trajectory_port="$(arg trajectory_port)"
+      >
+      <origin xyz="0 0 0" rpy="0 0 0" />          <!-- position robot in the world -->
+    </xacro:ur_robot>
+
+    <!-- Configure self collision properties per link -->
+    <gazebo reference="${prefix}shoulder_link">
+      <selfCollide>true</selfCollide>
+    </gazebo>
+    <gazebo reference="${prefix}upper_arm_link">
+      <selfCollide>true</selfCollide>
+    </gazebo>
+    <gazebo reference="${prefix}forearm_link">
+      <selfCollide>true</selfCollide>
+    </gazebo>
+    <gazebo reference="${prefix}wrist_1_link">
+      <selfCollide>true</selfCollide>
+    </gazebo>
+    <gazebo reference="${prefix}wrist_3_link">
+      <selfCollide>true</selfCollide>
+    </gazebo>
+    <gazebo reference="${prefix}wrist_2_link">
+      <selfCollide>true</selfCollide>
+    </gazebo>
+    <gazebo reference="${prefix}ee_link">
+      <selfCollide>true</selfCollide>
+    </gazebo>
+
+    <!--
+      Inject Gazebo ROS Control plugin, which allows us to use ros_control
+      controllers to control the virtual robot hw.
+    -->
+    <gazebo>
+      <plugin name="ros_control" filename="libgazebo_ros_control.so">
+        <!--robotNamespace>/</robotNamespace-->
+        <!--robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType-->
+      </plugin>
+    </gazebo>
+
+     <!-- Collision sensors on all links -->
+    <gazebo reference="${prefix}shoulder_link">
+      <sensor name='${prefix}shoulder_link_contact' type='contact'>
+        <update_rate> 50 </update_rate>
+        <always_on>true</always_on>
+          <contact>
+              <collision>${prefix}shoulder_link_collision</collision>
+          </contact>
+          <plugin name="ros_bumper_0" filename="libgazebo_ros_bumper.so">
+            <bumperTopicName>${prefix}shoulder_collision</bumperTopicName>
+            <frameName>${prefix}shoulder_link</frameName>
+          </plugin>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="${prefix}upper_arm_link">
+      <sensor name='${prefix}upper_arm_link_contact' type='contact'>
+        <update_rate> 50 </update_rate>
+        <always_on>true</always_on>
+         <contact>
+             <collision>${prefix}upper_arm_link_collision</collision>
+         </contact>
+         <plugin name="ros_bumper_1" filename="libgazebo_ros_bumper.so">
+            <bumperTopicName>${prefix}upper_arm_collision</bumperTopicName>
+            <frameName>${prefix}upper_arm_link</frameName>
+         </plugin>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="${prefix}forearm_link">
+      <sensor name='${prefix}forearm_link_contact' type='contact'>
+        <update_rate> 50 </update_rate>
+        <always_on>true</always_on>
+         <contact>
+             <collision>${prefix}forearm_link_collision</collision>
+         </contact>
+         <plugin name="ros_bumper_2" filename="libgazebo_ros_bumper.so">
+            <bumperTopicName>${prefix}forearm_collision</bumperTopicName>
+            <frameName>${prefix}forearm_link</frameName>
+         </plugin>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="${prefix}wrist_1_link">
+      <sensor name='${prefix}wrist_1_link_contact' type='contact'>
+        <update_rate> 50 </update_rate>
+        <always_on>true</always_on>
+         <contact>
+             <collision>${prefix}wrist_1_link_collision</collision>
+         </contact>
+         <plugin name="ros_bumper_3" filename="libgazebo_ros_bumper.so">
+            <bumperTopicName>${prefix}wrist_1_collision</bumperTopicName>
+            <frameName>${prefix}wrist_1_link</frameName>
+         </plugin>
+      </sensor>
+    </gazebo>
+
+    <gazebo reference="${prefix}wrist_2_link">
+      <sensor name='wrist_2_link_contact' type='contact'>
+        <update_rate> 50 </update_rate>
+        <always_on>true</always_on>
+         <contact>
+             <collision>${prefix}wrist_2_link_collision</collision>
+         </contact>
+         <plugin name="ros_bumper_4" filename="libgazebo_ros_bumper.so">
+            <bumperTopicName>${prefix}wrist_2_collision</bumperTopicName>
+            <frameName>${prefix}wrist_2_link</frameName>
+         </plugin>
+      </sensor>
+    </gazebo>  
+
+    <gazebo reference="${prefix}wrist_3_link">
+      <sensor name='${prefix}wrist_3_link_contact' type='contact'>
+        <update_rate> 50 </update_rate>
+        <always_on>true</always_on>
+         <contact>
+             <collision>${prefix}wrist_3_link_collision</collision>
+         </contact>
+         <plugin name="ros_bumper_5" filename="libgazebo_ros_bumper.so">
+            <bumperTopicName>${prefix}wrist_3_collision</bumperTopicName>
+            <frameName>${prefix}wrist_3_link</frameName>
+         </plugin>
+      </sensor>
+    </gazebo>
+  </xacro:macro>
+</robot>

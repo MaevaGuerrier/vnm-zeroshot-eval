@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ur_robot_server</name>
+  <version>2.1.2</version>
+  <description>Robot Server for Universal Robots robots</description>
+
+  <maintainer email="bernhard.reiterer@joanneum.at">Bernhard Reiterer</maintainer>
+  <maintainer email="benjamin.breiling@joanneum.at">Benjamin Breiling</maintainer>
+
+  <license>MIT</license>
+
+  <author email="bernhard.reiterer@joanneum.at">Bernhard Reiterer</author>
+  <author email="benjamin.breiling@joanneum.at">Benjamin Breiling</author>
+  <author email="nobody@example.com">Matteo Lucchi</author>
+  <author email="nobody@example.com">Friedemann Zindler</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>gazebo_ros</build_depend>
+
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>gazebo_ros</build_export_depend>
+  
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>tf</exec_depend>
+  <exec_depend>ur_gazebo</exec_depend>
+  <exec_depend>tmux</exec_depend>
+  <exec_depend>gazebo_ros_pkgs</exec_depend>
+
+  <export>
+    <gazebo_ros gazebo_model_path="${prefix}/models"/>
+    <gazebo_ros gazebo_media_path="${prefix}/worlds"/>
+  </export>
+</package>

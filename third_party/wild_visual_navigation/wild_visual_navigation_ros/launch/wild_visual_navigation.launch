@@ -1,0 +1,28 @@
+<launch>
+  <!-- Arguments -->
+  <arg name="camera_file"       default="$(find wild_visual_navigation_ros)/config/wild_visual_navigation/resized_wide_angle_dual.yaml"/>
+  <arg name="params_file"       default="$(find wild_visual_navigation_ros)/config/wild_visual_navigation/default.yaml"/>
+  <arg name="overlay_images"    default="True"/>
+
+  <!-- Clear old params -->
+  <rosparam command="delete" param="wvn_learning_node"/>
+  <rosparam command="delete" param="wvn_feature_extractor_node"/>
+
+  <!-- Load parameters -->
+  <rosparam command="load" file="$(arg params_file)" ns="wvn_learning_node"/>
+  <rosparam command="load" file="$(arg camera_file)" ns="wvn_learning_node"/>
+  <rosparam command="load" file="$(arg params_file)" ns="wvn_feature_extractor_node"/>
+  <rosparam command="load" file="$(arg camera_file)" ns="wvn_feature_extractor_node"/>
+
+  <!-- Launch node -->
+  <node name="wvn_learning_node" pkg="wild_visual_navigation_ros" type="wvn_learning_node.py" output="screen">
+    <param name="reload_default_params" value="False" />
+  </node>
+
+  <node name="wvn_feature_extractor_node" pkg="wild_visual_navigation_ros" type="wvn_feature_extractor_node.py" output="screen">
+    <param name="reload_default_params" value="False" />
+  </node>
+
+  <!-- Nice visualization overlay for front image only-->
+  <include if="$(arg overlay_images)" file="$(find wild_visual_navigation_ros)/launch/overlay_images.launch"/> 
+</launch>

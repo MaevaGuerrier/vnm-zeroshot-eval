@@ -1,0 +1,8 @@
+services:
+  wvn_nvidia:
+    extends:
+      file: docker-compose.yaml
+      service: wvn
+    environment:
+     - NVIDIA_VISIBLE_DEVICES=all
+    runtime: nvidia

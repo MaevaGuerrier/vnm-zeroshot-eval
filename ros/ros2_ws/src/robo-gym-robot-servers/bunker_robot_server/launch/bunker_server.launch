@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<launch>
+  <arg name="rviz_gui" default="false"/>
+  <arg name="server_port" default="50051"/>
+  <arg name="real_robot" default="true" doc="true: Real Robot, false: Simulated Robot"/>
+  <arg name="action_cycle_rate" default="10" doc="Rate at which new commands are published to the robot controller"/>
+
+  <!-- Rviz -->
+  <!-- <arg name="rviz_frame"                        default="$(arg robot_name)/base_footprint"/>
+  <arg name="rviz_config_path" default="$(find interbotix_rover_robot_server)/rviz"/>
+  <arg name="rviz_config_file" default="interbotix_rl.rviz" doc="RViz configuration file"/>
+  <arg name="rviz_config" value="$(arg rviz_config_path)/$(arg rviz_config_file)"/> -->
+
+
+  <!-- Global Parameters -->
+  <param name="real_robot" value="$(arg real_robot)"></param>
+
+  <!-- launch the bunker stuff -->
+  <!-- <include file="$(find bunker_server)/launch/bunker.launch" /> -->
+
+  <!-- /lvi_sam/lidar/mapping/odometry
+	/tf
+  /usb_cam/image_raw -->
+
+  <node name="robot_server" pkg="bunker_robot_server" type="robot_server.py" respawn="false" output="screen">
+      <param name="server_port" value="$(arg server_port)"></param>
+      <param name="action_cycle_rate" value="$(arg action_cycle_rate)"></param>
+      <param name="robot_model" value="bunker"></param>
+      <param name="real_robot" value="$(arg real_robot)"></param>
+  </node>
+
+</launch>

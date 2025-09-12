@@ -1,0 +1,44 @@
+<launch>
+
+    <include file="$(find usb_cam)/launch/usb_cam-test.launch" />
+ 
+   <!-- Static TF -->
+   <node pkg="tf" type="static_transform_publisher" name="tf_53" args="0 0 0 0 0 0 map navigation 100" />
+
+   <!--- Vector nav IMU -->
+   <include file="$(find rover_launch)/launch/vectornav.launch" />
+
+    <!--- Launch Ouster lidar node -->
+    <include file="$(find rover_launch)/launch/ouster_bunker.launch">
+    	<arg name="timestamp_mode"           value="TIME_FROM_ROS_TIME"/> <!--TIME_FROM_PTP_1588-->
+        <arg name="viz"     value = "false" />
+    </include>
+
+    <include file="$(find lvi_sam)/launch/include/module_sam_agx.launch" />
+    
+    <!-- Launch robot body filter node to filter lidar points -->
+    <node name="laser_filter" pkg="rover_launch" type="robot_bodyfilter" output="screen">
+	<param name="lidarScanTopic" type="string" value="/os_cloud_node/points" />
+    </node>
+
+    <!--- AGX state publisher -->
+    <include file="$(find lvi_sam)/launch/include/module_robot_state_publisher_bunker.launch" />
+
+    <!-- Launch robot driver without the default Joystick node for local planner -->
+    <include file ="$(find rover_launch)/launch/bunker_base.launch" />
+
+
+
+    <node pkg="tf" type="static_transform_publisher" name="tf_lidar" args="0.0 0 0.0 0 0 0 ouster_link os_sensor 10" />
+    <node pkg="tf" type="static_transform_publisher" name="tf_baselink_filtered" args="0 0 0.0 0 0 0 base_link base_link_filtered 10" /> 
+
+
+
+  <node pkg="topic_tools" type="relay" name="top_lidar_relay" args="/os_cloud_node/points_filtered /input_pointcloud" />
+
+
+
+
+    
+
+</launch>

@@ -1,0 +1,7 @@
+video_device: "/dev/video0"
+image_width: 160 
+image_height: 120 
+pixel_format: yuyv
+camera_frame_id: "usb_cam"
+io_method: "mmap"
+framerate: 9
