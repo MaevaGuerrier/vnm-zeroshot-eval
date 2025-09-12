@@ -14,3 +14,9 @@
 	path = diffusion_policy
 	url = git@github.com:MaevaGuerrier/diffusion_policy.git
 	branch = main
+[submodule "wild_visual_navigation"]
+	path = wild_visual_navigation
+	url = git@github.com:MaevaGuerrier/wild_visual_navigation.git
+[submodule "self_supervised_segmentation"]
+	path = self_supervised_segmentation
+	url = git@github.com:leggedrobotics/self_supervised_segmentation.git
