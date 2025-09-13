@@ -35,6 +35,7 @@ RUN apt update \
         python3-catkin-tools \
         python3-osrf-pycommon \
         python3-tk \
+        ros-noetic-usb-cam \
     && rm -f "/etc/ros/rosdep/sources.list.d/20-default.list" \
     && rosdep init \
     && rosdep update \
