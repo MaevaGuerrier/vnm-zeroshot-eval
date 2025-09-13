@@ -265,3 +265,38 @@ timm
 tqdm
 trimesh
 ```
+
+
+
+# SafeGNM 
+
+
+
+workspace catkin 
+
+
+mkdir -p /workspace/ros/catkin_ws/src
+
+cd /workspace/ros/catkin_ws
+
+catkin init
+catkin config --extend /opt/ros/noetic
+catkin config --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo
+
+ln -s /workspace/third_party/wild_visual_navigation/ /workspace/ros/catkin_ws/src/
+
+catkin build wild_visual_navigation_ros
+
+source devel/setup.bash
+
+
+## Troubleshooting 
+
+### module 'torch.library' has no attribute 'register_fake'
+
+pip install --upgrade torch torchvision torchaudio
+
+
+### ./init_submodules.sh 
+
+git config --global --add safe.directory /workspace

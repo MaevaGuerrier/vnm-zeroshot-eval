@@ -29,3 +29,4 @@ pydensecrf @ git+https://github.com/lucasb-eyer/pydensecrf.git
 liegroups @ git+https://github.com/mmattamala/liegroups.git
 opencv-python-headless
 diffusers
+
