@@ -15,8 +15,11 @@ fi
 
 cp /workspace/third_party/self_supervised_segmentation/models/stego_cocostuff27_vit_base_5_cluster_linear_fine_tuning.ckpt /usr/local/lib/python3.8/dist-packages/models/
 
+cp /workspace/third_party/wild_visual_navigation/assets/checkpoints/indoor_mpi.pt /usr/local/lib/python3.8/dist-packages/.tmp_state_dict.pt
 
 pip3 install /workspace/src/visualnav-transformer/train/
+
+pip3 install rosnumpy
 
 pip3 install --upgrade attrs
    
