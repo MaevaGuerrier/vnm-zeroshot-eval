@@ -91,8 +91,6 @@ RUN rm -rf /var/lib/apt/lists/* && apt clean
 # ==
 ARG DEBIAN_FRONTEND=dialog
 
-
-
 ARG CACHE_BUST=1
 COPY ./setup.sh /tmp/setup.sh
 RUN chmod +x /tmp/setup.sh
