@@ -1,28 +1,41 @@
 #!/bin/bash
-pip3 install /workspace/third_party/self_supervised_segmentation/
 
-pip3 install /workspace/third_party/wild_visual_navigation/
+target=/workspace/.packages_safegnm
+
+pip3 install third_party/self_supervised_segmentation/ --target $target
+
+pip3 install /workspace/third_party/wild_visual_navigation/ --target $target
+
+pip3 install /workspace/third_party/diffusion_policy/ --target $target
 
 # check if stego_cocostuff27_vit_base_5_cluster_linear_fine_tuning.ckpt exists in /workspace/third_party/self_supervised_segmentation/models
 if [ ! -f /workspace/third_party/self_supervised_segmentation/models/stego_cocostuff27_vit_base_5_cluster_linear_fine_tuning.ckpt ]; then
     ./workspace/third_party/self_supervised_segmentation/download_model.sh
 fi
 
-# check if /usr/local/lib/python3.8/dist-packages/models/ exists, if not create it
-if [ ! -d /usr/local/lib/python3.8/dist-packages/models/ ]; then
-    mkdir /usr/local/lib/python3.8/dist-packages/models/
-fi
 
-cp /workspace/third_party/self_supervised_segmentation/models/stego_cocostuff27_vit_base_5_cluster_linear_fine_tuning.ckpt /usr/local/lib/python3.8/dist-packages/models/
+mkdir /workspace/.packages_safegnm/models/  
+cp /workspace/third_party/self_supervised_segmentation/models/stego_cocostuff27_vit_base_5_cluster_linear_fine_tuning.ckpt /workspace/.packages_safegnm/models/
 
-# cp /workspace/third_party/wild_visual_navigation/assets/checkpoints/indoor_mpi.pt /usr/local/lib/python3.8/dist-packages/.tmp_state_dict.pt
 
-# cp /workspace/third_party/wild_visual_navigation/assets/checkpoints/mountain_bike_trail_v2.pt /usr/local/lib/python3.8/dist-packages/.tmp_state_dict.pt
+# TODO 
+# IF WE KEEP TARGET WE HAVE TO CP HERE --> /workspace/.packages_safegnm/.tmp_state_dict.pt
+# cp /workspace/third_party/wild_visual_navigation/assets/checkpoints/indoor_mpi.pt /workspace/.packages_safegnm/.tmp_state_dict.pt
 
-pip3 install /workspace/src/visualnav-transformer/train/
+# cp /workspace/third_party/wild_visual_navigation/assets/checkpoints/mountain_bike_trail_v2.pt /workspace/.packages_safegnm/.tmp_state_dict.pt
 
-pip3 install rosnumpy
+pip3 install /workspace/src/visualnav-transformer/train/ --target $target
 
-pip3 install --upgrade attrs
-   
-pip3 install --upgrade --force-reinstall numpy
+pip3 install rosnumpy --target $target
+
+pip3 install --upgrade attrs --target $target
+
+pip3 install --upgrade --force-reinstall numpy --target $target
+
+pip3 install efficientnet-pytorch --target $target
+
+pip3 install einops --target $target
+
+pip3 install vit-pytorch --target $target
+
+pip3 install diffusers --target $target

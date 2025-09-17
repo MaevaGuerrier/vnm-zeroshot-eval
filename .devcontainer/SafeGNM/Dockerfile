@@ -45,12 +45,10 @@ RUN apt update \
 # Install python packages
 # ==
 RUN cd /root \
-    && python3 -m venv env --system-site-packages \
-    && source /root/env/bin/activate \
     && pip install --upgrade pip \
     && pip3 install --no-cache-dir \
          torch==2.1.0 torchvision --extra-index-url https://download.pytorch.org/whl/cu121 \
-    && pip3 install --no-cache-dir \
+    && pip3 install --no-cache-dir --ignore-installed \
          black \
          flake8 \
          jupyter \
@@ -95,7 +93,12 @@ ARG CACHE_BUST=1
 COPY ./setup.sh /tmp/setup.sh
 RUN chmod +x /tmp/setup.sh
 RUN echo "source /tmp/setup.sh" >> /root/.bashrc
+# COPY ./init_project.sh /tmp/init_project.sh
+# RUN chmod +x /tmp/init_project.sh
 
+
+
+# RUN /tmp/init_project.sh
 # Default entrypoint
 ENTRYPOINT ["/tmp/setup.sh"]
 CMD ["bash", "-c", "source ~/.bashrc && exec bash"]
