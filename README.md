@@ -300,3 +300,8 @@ pip install --upgrade torch torchvision torchaudio
 ### ./init_submodules.sh 
 
 git config --global --add safe.directory /workspace
+
+
+### issue genpy
+
+source /opt/ros/noetic/setup.bash

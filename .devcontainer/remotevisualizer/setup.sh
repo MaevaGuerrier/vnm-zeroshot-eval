@@ -2,7 +2,8 @@
 
 source /opt/ros/noetic/setup.bash
 
-export ROS_MASTER_URI=http://192.168.1.178:11311
+export ROS_MASTER_URI=http://192.168.1.178:11311 # BUNKER1
+export ROS_IP=192.168.1.216
 
 # source /opt/ros/humble/setup.bash
 
