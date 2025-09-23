@@ -2,14 +2,6 @@
 	path = src/visualnav-transformer
 	url = git@github.com:MaevaGuerrier/visualnav-transformer.git
 	branch = main
-[submodule "ros/ros1_ws/src/robo-gym-robot-servers"]
-	path = ros/ros1_ws/src/robo-gym-robot-servers
-	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
-	branch = main
-[submodule "ros/ros2_ws/src/robo-gym-robot-servers"]
-	path = ros/ros2_ws/src/robo-gym-robot-servers
-	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
-	branch = ros2
 [submodule "third_party/diffusion_policy"]
 	path = third_party/diffusion_policy
 	url = git@github.com:MaevaGuerrier/diffusion_policy.git
