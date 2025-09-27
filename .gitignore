@@ -4,6 +4,10 @@ safeGNM/
 sim/*
 datasets/*
 
+# For now when switching branch submodules are untracked and appears in the worktree
+ViNT_NaviD/*
+Depth-Anything-V2/*
+
 crossformer/assets/chunk/
 
 *.bag
