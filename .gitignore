@@ -9,6 +9,12 @@ ros/
 *.bag
 src/*
 
+
+# FIND A WAY TO HANDLE SUBMODULE ARTIFACTS
+third_party/UniDepth
+third_party/wild_visual_navigation
+third_party/self_supervised_segmentation
+
 # ROS2 WORKSPACE 
 
 ros2_ws/build/
