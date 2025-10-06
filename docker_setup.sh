@@ -7,12 +7,6 @@ _BOLD='\e[33m'
 _RED='\e[31m'
 clear
 
-CHOOSE=1
-MODEL=1
-image_tag=safe_gmn:dev
-container_name=safe_gmn
-
-
 
 function PRINT_MENU()
 {
