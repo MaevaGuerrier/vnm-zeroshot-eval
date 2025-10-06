@@ -1,5 +1,10 @@
+
 # FROM img_name:tag
-FROM dustynv/l4t-pytorch:2.2-r35.4.1
+# Declare build args (Docker passes these automatically with buildx)
+ARG TARGETARCH
+ARG TARGETOS
+
+FROM nvidia/cuda:12.3.2-runtime-ubuntu20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
@@ -14,7 +19,7 @@ RUN apt-get update \
     libglfw3-dev \
     libgl1-mesa-dev \
     libglu1-mesa-dev \    
-    curl \	
+    curl \    
     libusb-1.0-0 \
     udev \
     apt-transport-https \
@@ -24,13 +29,19 @@ RUN apt-get update \
     wget \
     software-properties-common \
     apt-utils \
-    python3-grpcio \
+    python3.8 \
+    python3.8-distutils \
     python3-scipy \
     psmisc \
     vim-gtk \ 
     libcppunit-dev \
     python3-pip \
+    autoconf automake libtool rsync \
     nano
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+
+
 
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list' \
     && curl -sSL 'https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc' | apt-key add -
@@ -40,62 +51,40 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tmux \
     python3-catkin-tools \
     ros-noetic-cv-bridge \
+    ros-noetic-gazebo* ros-noetic-rviz \
+    ros-noetic-roslint \
+    ros-noetic-pcl-conversions \
+    ros-noetic-eigen-conversions \
+    ros-noetic-pcl-ros \
+    ros-noetic-tf-conversions \
+    ros-noetic-ros-controllers \ 
+    ros-noetic-xacro \
+    ros-noetic-robot-state-publisher \
     python3-rosdep \
     ros-noetic-teleop-twist-keyboard \
     && rm -rf /var/lib/apt/lists/*
 
-####### ros2 for brige nav2 ros ###################
-
-# # Install curl and gnupg2 first
-# RUN apt-get update && apt-get install -y curl gnupg2 lsb-release \
-#     && rm -rf /var/lib/apt/lists/*
-
-# # Add ROS 2 apt repository
-# RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-#     -o /usr/share/keyrings/ros-archive-keyring.gpg \
-#  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
-# http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
-#     > /etc/apt/sources.list.d/ros2-latest.list
-
-# RUN apt-get update && apt-get install -y ros-foxy-ros-base \
-#     && rm -rf /var/lib/apt/lists/*
 
 
-##########################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-RUN pip install --no-cache-dir --index-url https://pypi.org/simple matplotlib==3.5.1 \
-                robo-gym-server-modules \ 
+RUN pip install matplotlib==3.5.1 \
+                torch==2.4.0 torchvision --extra-index-url https://download.pytorch.org/whl/cu121 \
                 pyyaml \
                 einops \
                 vit-pytorch \
-  		        rospkg \
-  		        defusedxml \
-                protobuf==3.20 \
-  		        huggingface_hub==0.23.5 \
-		        efficientnet_pytorch \
-		        warmup_scheduler \
-		        diffusers==0.11.1 \
+                  rospkg \
+                  defusedxml \
+                efficientnet_pytorch \
+                huggingface_hub==0.23.5 \
+                warmup_scheduler \
+                diffusers==0.11.1 \
                 numpy==1.24.4 \
+                scipy==1.10.1 \
+                wandb \
+                bagpy \
+                networkx==3.1 \
                 prettytable
 
-# diffusion policy for NoMad 
-# RUN git clone https://github.com/real-stanford/diffusion_policy.git &&\
-#     pip install -e diffusion_policy/
 
-# DUMMY VAR TO MAKE CHANGES ONLY HERE CHANGE THE NUMBER
 ARG CACHE_BUST=1
 COPY ./setup.sh /tmp/setup.sh
 
@@ -103,3 +92,4 @@ RUN chmod +x /tmp/setup.sh
 RUN echo "source /tmp/setup.sh" >> /root/.bashrc
 ENTRYPOINT ["/tmp/setup.sh"]
 CMD ["bash","-l"]
+
