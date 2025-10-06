@@ -2,3 +2,7 @@
 	path = src/visualnav-transformer
 	url = git@github.com:MaevaGuerrier/visualnav-transformer.git
 	branch = nomad
+[submodule "third_party/diffusion_policy"]
+	path = third_party/diffusion_policy
+	url = git@github.com:MaevaGuerrier/diffusion_policy.git
+	branch = nomad
