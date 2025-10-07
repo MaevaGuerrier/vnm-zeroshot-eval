@@ -9,6 +9,7 @@ ros/
 *.bag
 src/*
 *.csv
+metrics/dataframes/
 
 # FIND A WAY TO HANDLE SUBMODULE ARTIFACTS
 third_party/UniDepth
