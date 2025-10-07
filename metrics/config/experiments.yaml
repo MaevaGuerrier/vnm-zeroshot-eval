@@ -1,0 +1,45 @@
+robots:
+  bunker:
+    topics:
+      odom: "/lvi_sam/lidar/mapping/odometry"
+      status: /status
+      reached_goal: "/topoplan/reached_goal"
+    data_header:
+      pose_x: pose.pose.position.x
+      pose_y: pose.pose.position.y
+      goal: data
+      # ready_flag: "ready" # TODO MAKE IT CUSTOM str float or leave as is
+      # stop_flag: "stop" # TODO MAKE IT CUSTOM str float or leave as is
+      # intervention_flag: "intervention" # TODO MAKE IT CUSTOM str float or leave as is
+
+
+
+environments:
+  sim:
+    - clearpath_playpen
+  indoor:
+    - mist_office_v1
+    - hallway
+  outdoor:
+    - parking_lot
+    - forest
+
+
+# Not implemented yet
+# - human
+# - object
+augmentations:
+  - brightness
+  - blur
+  - fog
+  - sunFlare_overlay
+  - sunFlare_physic
+  - rain
+  - rain_heavy
+  - rain_drizzle
+  - rain_torrential
+  - original # no augmentation
+
+paths:
+  bags_dir: "/workspace/metrics/bags/"
+  dataframes_dir: "/workspace/metrics/dataframes/"
