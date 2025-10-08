@@ -38,7 +38,7 @@ augmentations:
   - rain_heavy
   - rain_drizzle
   - rain_torrential
-  - original # no augmentation
+  - reference # no augmentation
 
 paths:
   bags_dir: "/workspace/metrics/bags/"
