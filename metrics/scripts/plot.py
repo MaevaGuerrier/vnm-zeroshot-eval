@@ -136,6 +136,99 @@ def summarize_goal_distances(df, group_cols=['robot', 'environment', 'augmentati
 
 
 
+def plot_envtype_environments(df: pd.DataFrame,
+                              ref_augment: str = 'original',
+                              figsize_per_env=(5, 5)):
+    """
+    Plot (pose_x, pose_y) results grouped by env_type.
+    Each env_type has a single figure containing one subplot per environment.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Must contain ['pose_x', 'pose_y', 'robot', 'environment', 'env_type', 'augmentation', 'dist_to_goal'].
+    ref_augment : str, optional
+        Reference augmentation name (default: 'original').
+    figsize_per_env : tuple, optional
+        Size of each subplot (default: (5, 5)).
+    """
+
+    required_cols = ['pose_x', 'pose_y', 'robot', 'environment', 'env_type', 'augmentation', 'dist_to_goal']
+    for c in required_cols:
+        if c not in df.columns:
+            raise ValueError(f"Missing column: {c}")
+
+    df = df.copy()
+    env_types = df['env_type'].unique()
+
+    for env_type in env_types:
+        subset = df[df['env_type'] == env_type]
+        envs = subset['environment'].unique()
+        n_envs = len(envs)
+
+        # Compute subplot grid
+        ncols = min(3, n_envs)
+        nrows = int(np.ceil(n_envs / ncols))
+
+        fig, axes = plt.subplots(
+            nrows, ncols,
+            figsize=(figsize_per_env[0]*ncols, figsize_per_env[1]*nrows),
+            squeeze=False
+        )
+
+        sns.set(style="whitegrid")
+        palette = sns.color_palette("tab10", n_colors=subset['augmentation'].nunique())
+        color_map = dict(zip(subset['augmentation'].unique(), palette))
+
+        for i, env_name in enumerate(envs):
+            ax = axes[i // ncols, i % ncols]
+            env_df = subset[subset['environment'] == env_name]
+            robots = env_df['robot'].unique()
+
+            for robot in robots:
+                robot_df = env_df[env_df['robot'] == robot]
+                ref_row = robot_df[robot_df['augmentation'] == ref_augment]
+
+                if ref_row.empty:
+                    continue
+
+                ref_x = ref_row['pose_x'].values[0]
+                ref_y = ref_row['pose_y'].values[0]
+
+                for _, row in robot_df.iterrows():
+                    aug = row['augmentation']
+                    color = color_map.get(aug, 'gray')
+
+                    if aug == ref_augment:
+                        ax.scatter(ref_x, ref_y, color='black', s=120, marker='o', label=f"{robot} ({ref_augment})")
+                    else:
+                        ax.scatter(row['pose_x'], row['pose_y'], color=color, s=60, marker='x', label=f"{robot}-{aug}")
+                        ax.plot([row['pose_x'], ref_x], [row['pose_y'], ref_y],
+                                color=color, linestyle='--', linewidth=1.2)
+                        if not pd.isna(row['dist_to_goal']):
+                            dist_text = f"{row['dist_to_goal']:.2e}"
+                            mid_x = (row['pose_x'] + ref_x) / 2
+                            mid_y = (row['pose_y'] + ref_y) / 2
+                            ax.text(mid_x, mid_y, dist_text, fontsize=8, color=color,
+                                    ha='center', va='bottom')
+
+            ax.set_title(f"{robot} - {env_name}", fontsize=10)
+            ax.set_xlabel("Pose X")
+            ax.set_ylabel("Pose Y")
+            ax.grid(True)
+            ax.legend(fontsize=7, loc='upper right')
+
+        # Remove unused subplots
+        for j in range(i+1, nrows*ncols):
+            fig.delaxes(axes[j // ncols, j % ncols])
+
+        fig.suptitle(f"Environment Type: {env_type}", fontsize=14, fontweight='bold')
+        plt.tight_layout(rect=[0, 0, 1, 0.95])
+        plt.show()
+
+
+
+
 if __name__ == "__main__":
 
     reference_header = 'original'
@@ -180,4 +273,6 @@ if __name__ == "__main__":
             results.append(last_positions_df)
                 
     final_df = pd.concat(results, ignore_index=True)
-    print(final_df.head())
+    # print(final_df.head())
+    plot_envtype_environments(final_df, ref_augment=reference_header)
+
