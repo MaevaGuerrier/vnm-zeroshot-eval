@@ -4,6 +4,8 @@ from pathlib import Path
 import re
 from tqdm import tqdm
 from utils import load_config
+from collections import defaultdict
+import time
 
 # TODO make workers for multiprocess
 
@@ -51,34 +53,24 @@ def load_all_data(base_dir, env_map, config_data_header):
     rename_headers = {v: k for k, v in config_data_header.items()} # we have a uniform data structure but odom pose for example is robot dependant, see config experiments.yaml data_header tag
 
 
-    for robot_dir in tqdm(base_dir.iterdir(), desc="Processing dataframes"):
-        if not robot_dir.is_dir():
-            continue
+    for robot_dir in base_dir.iterdir():
         robot_name = robot_dir.name
-
         for env_dir in robot_dir.iterdir():
-            if not env_dir.is_dir():
-                continue
-            env_name = (env_dir.name).replace(" ", "")  # Handle spaces in directory names
-            env_type = env_map[env_name]
-
+            env_name = env_dir.name
+            env_type = env_map.get(env_name, "unknown")
             for aug_dir in env_dir.iterdir():
-                if not aug_dir.is_dir():
-                    continue
                 aug_name = aug_dir.name
 
-                for csv_file in aug_dir.glob("*.csv"):
-                    try:
-                        df = pd.read_csv(csv_file)
-                        df = df[keep_cols]
-                        df = df.rename(columns=rename_headers)
-                        df["robot"] = robot_name
-                        df["environment"] = env_name
-                        df["env_type"] = env_type
-                        df["augmentation"] = aug_name
-                        all_data.append(df)
-                    except Exception as e:
-                        print(f"[WARN] Skipping {csv_file}: {e}")
+                dfs = [pd.read_csv(f) for f in aug_dir.glob(f"{robot_name}_{env_name}_{aug_name}_*.csv")]
+                merged_df = pd.concat(dfs, axis=1)  # TODO use merge if columns overlap later on when adding more topics
+                merged_df = merged_df[keep_cols]
+                merged_df = merged_df.rename(columns=rename_headers)
+                merged_df["robot"] = robot_name
+                merged_df["environment"] = env_name
+                merged_df["env_type"] = env_type
+                merged_df["augmentation"] = aug_name
+                merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
+                all_data.append(merged_df)
 
     if not all_data:
         raise ValueError("No data found!")
@@ -134,7 +126,8 @@ def main():
 
 
     df = load_all_data(config["paths"]["dataframes_dir"], env_map, config["robots"][robot]["data_header"])
-    print(df.head())
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    df.to_csv(f"{config['paths']['dataframes_dir']}all_data_{timestamp}.csv", index=False)
 
 
 if __name__ == "__main__":
