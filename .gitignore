@@ -10,6 +10,7 @@ ros/
 src/*
 *.csv
 metrics/dataframes/
+*.png
 
 # FIND A WAY TO HANDLE SUBMODULE ARTIFACTS
 third_party/UniDepth
