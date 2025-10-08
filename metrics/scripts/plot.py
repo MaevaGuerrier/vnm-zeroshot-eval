@@ -4,13 +4,15 @@ from utils import load_config
 import pandas as pd
 
 
-def plot_odometry(df, title="", save_path="../plots/"):  
-    sns.set(style="whitegrid", context="talk")
+def plot_odometry(df, title="", save_path="../plots/", show=False):  
+    sns.set(style="darkgrid", context="talk")
     plt.figure(figsize=(8, 6))
     sns.lineplot(
         x=df['pose_x'],
         y=df['pose_y'],
         linewidth=2.5,
+        hue=df['augmentation'],
+        palette="tab10"
     )
     plt.title(title)
     plt.xlabel("X position [m]")
@@ -18,7 +20,9 @@ def plot_odometry(df, title="", save_path="../plots/"):
     plt.axis('equal')
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
-    plt.show()
+    if show:
+        plt.show()
+    plt.close()
 
 
 # sim_reference = bagreader("bags/deploy_normal.bag")
@@ -58,23 +62,18 @@ def plot_odometry(df, title="", save_path="../plots/"):
 
 
 
-
-
-    # plot_title = f"Trajectory ({robot} - {env} - {aug})"
-    # plot_odometry(df_odom, plot_title, save_path=f"figures/{robot}_{env}_{aug}_traj.png")
-
 if __name__ == "__main__":
 
     config = load_config()
     root_path = config["paths"]["dataframes_dir"]
-    all_df = pd.read_csv(f"{root_path}all_data_20251008-001723.csv")
+    df = pd.read_csv(f"{root_path}all_data_20251008-160502.csv")
+
+    for robot in df["robot"].unique():
+        robot_df = df[df["robot"] == robot]
+        for env in robot_df["environment"].unique():
+            env_df = robot_df[robot_df["environment"] == env]
+            plot_odometry(df=env_df, title=f"{robot} - {env}", save_path=f"../plots/odometry_{robot}_{env}.png")
 
 
-    test_df = all_df[all_df["environment"] == "hallway"]
-    plot_odometry(df=test_df)
 
 
-    
-
-
-   

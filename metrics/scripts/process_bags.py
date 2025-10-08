@@ -22,7 +22,7 @@ def filter_by_start_stop(df, start_status, stop_status):
     return df
 
 
-def process_bag_to_df(bag_path, bag_name, topics, output_dir):
+def process_bag_to_df(bag_path, bag_name, augmentation, topics, output_dir):
     bag = bagreader(bag_path)
 
     dataframes = {}
@@ -30,6 +30,10 @@ def process_bag_to_df(bag_path, bag_name, topics, output_dir):
     for name, topic in topics.items():
         if name in ["status", "ready_flag", "stop_flag", "intervention_flag"]: # TODO remove status one done when collecting bags
             continue   
+
+        if augmentation == "original" and name != "odom": # only save odom for reference trajectory
+            continue
+
         csvfile = bag.message_by_topic(topic)
         df = pd.read_csv(csvfile)        
         Path(output_dir).mkdir(parents=True, exist_ok=True)
@@ -42,10 +46,21 @@ def find_bag_files(bag_dir):
     return [str(path) for path in Path(bag_dir).rglob("*.bag")] # done for now since bagreader needs str
 
 
+
+
+# Reference trajectories won't have all columns, ensure they exist for concatenation
+def ensure_columns(df, keep_cols, fill_value=None):
+    for col in keep_cols:
+        if col not in df.columns:
+            df[col] = fill_value
+    return df[keep_cols]
+
+
+
+
 # TODO filter_by_start_stop
 # TODO if reach goal then becomes stop flag
 # dataframes = filter_by_start_stop(dataframes, topics.get("ready_flag"), topics.get("stop_flag"))
-
 def load_all_data(base_dir, env_map, config_data_header):
     base_dir = Path(base_dir)
     all_data = []
@@ -54,6 +69,8 @@ def load_all_data(base_dir, env_map, config_data_header):
 
 
     for robot_dir in base_dir.iterdir():
+        if not robot_dir.is_dir():
+            continue
         robot_name = robot_dir.name
         for env_dir in robot_dir.iterdir():
             env_name = env_dir.name
@@ -63,6 +80,10 @@ def load_all_data(base_dir, env_map, config_data_header):
 
                 dfs = [pd.read_csv(f) for f in aug_dir.glob(f"{robot_name}_{env_name}_{aug_name}_*.csv")]
                 merged_df = pd.concat(dfs, axis=1)  # TODO use merge if columns overlap later on when adding more topics
+
+                if aug_name == "original":
+                    ensure_columns(merged_df, keep_cols)
+
                 merged_df = merged_df[keep_cols]
                 merged_df = merged_df.rename(columns=rename_headers)
                 merged_df["robot"] = robot_name
@@ -118,11 +139,11 @@ def main():
         process_bag_to_df(
             bag_path=bag_file,
             bag_name=bag_name,
+            augmentation=aug,
             topics=config["robots"][robot]["topics"],
             output_dir=f"{config['paths']['dataframes_dir']}{robot}/{env}/{aug}/",
         )       
         
-
 
 
     df = load_all_data(config["paths"]["dataframes_dir"], env_map, config["robots"][robot]["data_header"])
