@@ -12,6 +12,8 @@ crossformer/assets/chunk/
 
 *.bag
 src/*
+*.csv
+*.png
 
 # ROS2 WORKSPACE 
 
