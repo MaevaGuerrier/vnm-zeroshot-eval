@@ -83,7 +83,7 @@ def get_final_goal_positions(df, goal_col='goal', group_cols=['robot', 'environm
     """
 
     df_goal = df[df[goal_col] == True].copy() # HANLDLE OTHER STOPPING CONDITIONS
-    df_ref_traj = df[df['augmentation'] == 'original'].copy()
+    df_ref_traj = df[df['augmentation'] == 'reference'].copy()
     df_goal = pd.concat([df_goal, df_ref_traj])
 
     last_goal_df = (
@@ -137,7 +137,7 @@ def summarize_goal_distances(df, group_cols=['robot', 'environment', 'augmentati
 
 
 def plot_envtype_environments(df: pd.DataFrame,
-                              ref_augment: str = 'original',
+                              ref_augment: str = 'reference',
                               figsize_per_env=(5, 5)):
     """
     Plot (pose_x, pose_y) results grouped by env_type.
@@ -231,48 +231,50 @@ def plot_envtype_environments(df: pd.DataFrame,
 
 if __name__ == "__main__":
 
-    reference_header = 'original'
+    reference_header = 'reference'
 
     config = load_config()
     root_path = config["paths"]["dataframes_dir"]
-    df = pd.read_csv(f"{root_path}all_data_20251008-160502.csv") #Index(['pose_x', 'pose_y', 'goal', 'robot', 'environment', 'env_type','augmentation'],
+    df = pd.read_csv(f"{root_path}all_data_20251014-143507.csv") #Index(['pose_x', 'pose_y', 'goal', 'robot', 'environment', 'env_type','augmentation'],
 
+    # print(df.head())
 
     # PLOTS ODOMETRY BY ROBOT AND ENVIRONMENT
-    # for robot in df["robot"].unique():
-    #     robot_df = df[df["robot"] == robot]
-    #     for env in robot_df["environment"].unique():
-    #         env_df = robot_df[robot_df["environment"] == env]
-    #         plot_odometry(df=env_df, title=f"{robot} - {env}", save_path=f"../plots/odometry_{robot}_{env}.png")
-
-    # PLOT DISTANCE FROM GOAL BASED ON LAST POSITION IN DF
-    results = []
     for robot in df["robot"].unique():
         robot_df = df[df["robot"] == robot]
         for env in robot_df["environment"].unique():
             env_df = robot_df[robot_df["environment"] == env]
-            last_positions_df = env_df.groupby(['robot', 'environment', 'augmentation']).last().reset_index()
-            # print(last_positions_df)
-            ref_traj = last_positions_df[last_positions_df["augmentation"] == reference_header]
-            ref_traj.reset_index(drop=True, inplace=True) # this has to be done since we access by index below
-            if ref_traj.empty:
-                raise ValueError(f"No reference trajectory found for robot {robot} in environment {env}")
+            print(env_df.head())
+            plot_odometry(df=env_df, title=f"{robot} - {env}", save_path=f"../plots/odometry_{robot}_{env}.png")
 
-            augmentations = last_positions_df["augmentation"].unique()
-            augmentations = np.delete(augmentations, np.where(augmentations == reference_header)) # remove reference from augmentations to compute distance to goal
+    # PLOT DISTANCE FROM GOAL BASED ON LAST POSITION IN DF
+    # results = []
+    # for robot in df["robot"].unique():
+    #     robot_df = df[df["robot"] == robot]
+    #     for env in robot_df["environment"].unique():
+    #         env_df = robot_df[robot_df["environment"] == env]
+    #         last_positions_df = env_df.groupby(['robot', 'environment', 'augmentation']).last().reset_index()
+    #         # print(last_positions_df)
+    #         ref_traj = last_positions_df[last_positions_df["augmentation"] == reference_header]
+    #         ref_traj.reset_index(drop=True, inplace=True) # this has to be done since we access by index below
+    #         if ref_traj.empty:
+    #             raise ValueError(f"No reference trajectory found for robot {robot} in environment {env}")
 
-            for aug in augmentations:
-                curr_df = last_positions_df[last_positions_df["augmentation"] == aug]
-                curr_df.reset_index(drop=True, inplace=True) # this has to be done since we access by index to compute distance
-                last_positions_df.loc[last_positions_df["augmentation"] == aug, "dist_to_goal"] = np.sqrt(
-                    (curr_df.iloc[0]["pose_x"] - ref_traj.iloc[0]["pose_x"]) ** 2 + (curr_df.iloc[0]["pose_y"] - ref_traj.iloc[0]["pose_y"]) ** 2
-                )
+    #         augmentations = last_positions_df["augmentation"].unique()
+    #         augmentations = np.delete(augmentations, np.where(augmentations == reference_header)) # remove reference from augmentations to compute distance to goal
+
+    #         for aug in augmentations:
+    #             curr_df = last_positions_df[last_positions_df["augmentation"] == aug]
+    #             curr_df.reset_index(drop=True, inplace=True) # this has to be done since we access by index to compute distance
+    #             last_positions_df.loc[last_positions_df["augmentation"] == aug, "dist_to_goal"] = np.sqrt(
+    #                 (curr_df.iloc[0]["pose_x"] - ref_traj.iloc[0]["pose_x"]) ** 2 + (curr_df.iloc[0]["pose_y"] - ref_traj.iloc[0]["pose_y"]) ** 2
+    #             )
                 
 
             
-            results.append(last_positions_df)
+    #         results.append(last_positions_df)
                 
-    final_df = pd.concat(results, ignore_index=True)
-    # print(final_df.head())
-    plot_envtype_environments(final_df, ref_augment=reference_header)
+    # final_df = pd.concat(results, ignore_index=True)
+    # # print(final_df.head())
+    # plot_envtype_environments(final_df, ref_augment=reference_header)
 

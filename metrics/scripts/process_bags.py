@@ -148,52 +148,51 @@ def load_all_data(base_dir, env_map, config):
 def main():
     config = load_config()
     bag_files = find_bag_files(config["paths"]["bags_dir"]) # ASSUMPTION RUN INSIDE DOCKER THUS /workspace/metrics/bags is always present
-    augmentations = config["augmentations"]
+    # augmentations = config["augmentations"]
     env_map = {env: env_type for env_type, env_list in config["environments"].items() for env in env_list}
     environments = list(env_map.keys())
 
-    # for bag_file in bag_files:
-    #     bag_name = re.sub(rf'^{config["paths"]["bags_dir"]}|\.bag$', '', bag_file)
-
-    #     # bag_name = bag_file.stem  ONLY VALID IF GO BACK TO PATH LOGIC# e.g., bunker_mist_office_v1_blur
-    #     #print(f"[INFO] Found bag file: {bag_name}")
-
-    #     # --- Identify robot (first token before '_') ---
-    #     curr_robot = bag_name.split("_")[0]
-    #     if curr_robot not in config["robots"]:
-    #         print(f"[WARN] Unknown robot '{curr_robot}' in {bag_name}, skipping.")
-    #         continue
-    #     robot = curr_robot
-
-    #     # --- Identify environment (based on config names, not split position) ---
-    #     env = next((env for env in environments if env in bag_name), None)
-    #     if not env:
-    #         #print(f"[WARN] No known environment found in {bag_name}")
-    #         continue
-
-    #     # --- Identify augmentation (same logic) ---
-    #     aug = next((a for a in augmentations if a in bag_name), None)
-    #     if not aug:
-    #         #print(f"[WARN] No known augmentation found in {bag_name}")
-    #         continue
-
-    #     env_type = env_map[env]  # 'sim', 'indoor', or 'outdoor'
-
-    #     #print(f"[INFO] Robot={robot}, EnvType={env_type}, Env={env}, Aug={aug}")
-
-    #     process_bag_to_df(
-    #         bag_path=bag_file,
-    #         bag_name=bag_name,
-    #         augmentation=aug,
-    #         topics=config["robots"][robot]["topics"],
-    #         output_dir=f"{config['paths']['dataframes_dir']}{robot}/{env}/{aug}/",
-    #     )       
+    # import ipdb; ipdb.set_trace()
+    for bag_file in bag_files:
+        bag_name = re.sub(rf'^{config["paths"]["bags_dir"]}|\.bag$', '', bag_file)
         
 
-    df = load_all_data(config["paths"]["dataframes_dir"], env_map, config)
-    filtered_df = filter_start_stop(df)
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
-    filtered_df.to_csv(f"{config['paths']['dataframes_dir']}all_data_{timestamp}.csv", index=False)
+        # bag_name = bag_file.stem  ONLY VALID IF GO BACK TO PATH LOGIC# e.g., bunker_mist_office_v1_blur
+        #print(f"[INFO] Found bag file: {bag_name}")
+
+        # --- Identify robot (first token before '_') ---
+        curr_robot = bag_name.split("_")[0]
+        if curr_robot not in config["robots"]:
+            print(f"[WARN] Unknown robot '{curr_robot}' in {bag_name}, skipping.")
+            continue
+        robot = curr_robot
+
+        # --- Identify environment (based on config names, not split position) ---
+        env = next((env for env in environments if env in bag_name), None)
+        if not env:
+            #print(f"[WARN] No known environment found in {bag_name}")
+            continue
+
+        aug = re.search(rf"{env}_(.+)", bag_name).group(1)
+        # print(f"[INFO] Processing {bag_name}: robot={robot}, env={env}, aug={aug}")
+        if aug not in config["augmentations"]:
+            print(f"[WARN] No known augmentation {aug} found in {bag_name}, skipping.")
+            continue
+        
+
+        process_bag_to_df(
+            bag_path=bag_file,
+            bag_name=bag_name,
+            augmentation=aug,
+            topics=config["robots"][robot]["topics"],
+            output_dir=f"{config['paths']['dataframes_dir']}{robot}/{env}/{aug}/",
+        )       
+        
+
+    # df = load_all_data(config["paths"]["dataframes_dir"], env_map, config)
+    # filtered_df = filter_start_stop(df)
+    # timestamp = time.strftime("%Y%m%d-%H%M%S")
+    # filtered_df.to_csv(f"{config['paths']['dataframes_dir']}all_data_{timestamp}.csv", index=False)
 
 
 if __name__ == "__main__":

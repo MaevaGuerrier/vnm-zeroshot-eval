@@ -24,7 +24,6 @@ robots:
         time_closest_node: Time
       goal:
         goal: data
-        time_goal: Time
 
 
 environments:
