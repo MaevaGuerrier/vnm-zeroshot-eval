@@ -1,17 +1,30 @@
 robots:
-  bunker:
+  limo:
     topics:
-      odom: "/lvi_sam/lidar/mapping/odometry"
-      status: /status
+      odom: "/odom"
       reached_goal: "/topoplan/reached_goal"
+      cmd_teleop: /cmd_vel_teleop
+      cmd_model: /cmd_vel_navigate
+      closest_node: "/closest_node"
     data_header:
-      pose_x: pose.pose.position.x
-      pose_y: pose.pose.position.y
-      goal: data
-      # ready_flag: "ready" # TODO MAKE IT CUSTOM str float or leave as is
-      # stop_flag: "stop" # TODO MAKE IT CUSTOM str float or leave as is
-      # intervention_flag: "intervention" # TODO MAKE IT CUSTOM str float or leave as is
-
+      odom:
+        pose_x: pose.pose.position.x
+        pose_y: pose.pose.position.y
+        time_odom: Time
+      cmd_teleop:
+        lin_x_teleop: linear.x
+        lin_y_teleop: linear.y
+        time_teleop: Time
+      cmd_model:
+        lin_x_model: linear.x
+        lin_y_model: linear.y
+        time_model: Time
+      closest_node:
+        closest_node: data
+        time_closest_node: Time
+      goal:
+        goal: data
+        time_goal: Time
 
 
 environments:
@@ -38,7 +51,8 @@ augmentations:
   - rain_heavy
   - rain_drizzle
   - rain_torrential
-  - reference # no augmentation
+  - reference # reference trajectory
+  - no_augmentation 
 
 paths:
   bags_dir: "/workspace/metrics/bags/"
