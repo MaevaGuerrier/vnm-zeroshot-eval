@@ -22,8 +22,13 @@ robots:
       closest_node:
         closest_node: data
         time_closest_node: Time
-      goal:
+      reached_goal:
         goal: data
+        time_goal: Time
+    process_bag_metrics:
+      img_process_func: "process_custom_img"
+      odom_process_func: "nav_to_xy_yaw"
+      image_topic: "/camera/image_raw" # Needed for closest node plotting
 
 
 environments:
