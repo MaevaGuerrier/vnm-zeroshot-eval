@@ -20,3 +20,18 @@ pip install pillow torchvision
 ```
 
 5. Proceed with the python script ```data_augmentation.py```
+
+
+
+# Troubleshooting
+
+
+## ValueError: Multi-dimensional indexing 
+
+Error message:
+````
+( ValueError: Multi-dimensional indexing (e.g. obj[:, None]) is no longer supported. Convert to a numpy array before indexing instead.
+```
+
+pip install seaborn matplotlib pandas --target /workspace/.packages_{package_name}/ --upgrade
+

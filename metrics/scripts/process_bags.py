@@ -67,8 +67,6 @@ def find_bag_files(bag_dir):
     return [str(path) for path in Path(bag_dir).rglob("*.bag")] # done for now since bagreader needs str
 
 
-
-
 # Reference trajectories won't have all columns, ensure they exist for concatenation
 def ensure_columns(df, keep_cols, fill_value=None):
     for col in keep_cols:
@@ -153,46 +151,48 @@ def main():
     environments = list(env_map.keys())
 
     # import ipdb; ipdb.set_trace()
-    for bag_file in bag_files:
-        bag_name = re.sub(rf'^{config["paths"]["bags_dir"]}|\.bag$', '', bag_file)
+    # for bag_file in bag_files:
+    #     bag_name = re.sub(rf'^{config["paths"]["bags_dir"]}|\.bag$', '', bag_file)
         
 
-        # bag_name = bag_file.stem  ONLY VALID IF GO BACK TO PATH LOGIC# e.g., bunker_mist_office_v1_blur
-        #print(f"[INFO] Found bag file: {bag_name}")
+    #     # bag_name = bag_file.stem  ONLY VALID IF GO BACK TO PATH LOGIC# e.g., bunker_mist_office_v1_blur
+    #     #print(f"[INFO] Found bag file: {bag_name}")
 
-        # --- Identify robot (first token before '_') ---
-        curr_robot = bag_name.split("_")[0]
-        if curr_robot not in config["robots"]:
-            print(f"[WARN] Unknown robot '{curr_robot}' in {bag_name}, skipping.")
-            continue
-        robot = curr_robot
+    #     # --- Identify robot (first token before '_') ---
+    #     curr_robot = bag_name.split("_")[0]
+    #     if curr_robot not in config["robots"]:
+    #         print(f"[WARN] Unknown robot '{curr_robot}' in {bag_name}, skipping.")
+    #         continue
+    #     robot = curr_robot
 
-        # --- Identify environment (based on config names, not split position) ---
-        env = next((env for env in environments if env in bag_name), None)
-        if not env:
-            #print(f"[WARN] No known environment found in {bag_name}")
-            continue
+    #     # --- Identify environment (based on config names, not split position) ---
+    #     env = next((env for env in environments if env in bag_name), None)
+    #     if not env:
+    #         #print(f"[WARN] No known environment found in {bag_name}")
+    #         continue
 
-        aug = re.search(rf"{env}_(.+)", bag_name).group(1)
-        # print(f"[INFO] Processing {bag_name}: robot={robot}, env={env}, aug={aug}")
-        if aug not in config["augmentations"]:
-            print(f"[WARN] No known augmentation {aug} found in {bag_name}, skipping.")
-            continue
+    #     aug = re.search(rf"{env}_(.+)", bag_name).group(1)
+    #     # print(f"[INFO] Processing {bag_name}: robot={robot}, env={env}, aug={aug}")
+    #     if aug not in config["augmentations"]:
+    #         print(f"[WARN] No known augmentation {aug} found in {bag_name}, skipping.")
+    #         continue
         
 
-        process_bag_to_df(
-            bag_path=bag_file,
-            bag_name=bag_name,
-            augmentation=aug,
-            topics=config["robots"][robot]["topics"],
-            output_dir=f"{config['paths']['dataframes_dir']}{robot}/{env}/{aug}/",
-        )       
+    #     process_bag_to_df(
+    #         bag_path=bag_file,
+    #         bag_name=bag_name,
+    #         augmentation=aug,
+    #         topics=config["robots"][robot]["topics"],
+    #         output_dir=f"{config['paths']['dataframes_dir']}{robot}/{env}/{aug}/",
+    #     )       
         
 
-    # df = load_all_data(config["paths"]["dataframes_dir"], env_map, config)
-    # filtered_df = filter_start_stop(df)
-    # timestamp = time.strftime("%Y%m%d-%H%M%S")
-    # filtered_df.to_csv(f"{config['paths']['dataframes_dir']}all_data_{timestamp}.csv", index=False)
+    df = load_all_data(config["paths"]["dataframes_dir"], env_map, config)
+    # print(df.head())
+    filtered_df = filter_start_stop(df)
+    # print(filtered_df.head())
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    filtered_df.to_csv(f"{config['paths']['dataframes_dir']}all_data_{timestamp}.csv", index=False)
 
 
 if __name__ == "__main__":
