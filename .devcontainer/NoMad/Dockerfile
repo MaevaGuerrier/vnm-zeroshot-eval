@@ -66,24 +66,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 
 
-RUN pip install matplotlib==3.5.1 \
-                torch==2.4.0 torchvision --extra-index-url https://download.pytorch.org/whl/cu121 \
-                pyyaml \
-                einops \
-                vit-pytorch \
-                  rospkg \
-                  defusedxml \
-                efficientnet_pytorch \
-                huggingface_hub==0.23.5 \
-                warmup_scheduler \
-                diffusers==0.11.1 \
-                numpy==1.24.4 \
-                scipy==1.10.1 \
-                wandb \
-                bagpy \
-                networkx==3.1 \
-                prettytable
-
+RUN pip install \
+    "fsspec<2024.0.0" \
+    "aiohttp<3.9.0" \
+    "async-timeout<5.0" \
+    "pydantic<2" \
+    "wandb<0.16" \
+    typing-extensions==4.7.1 \
+    "filelock<3.13" \
+    matplotlib==3.5.1 \
+    torch==2.4.0 torchvision --extra-index-url https://download.pytorch.org/whl/cu124 \
+    pyyaml \
+    einops \
+    vit-pytorch \
+    rospkg \
+    defusedxml \
+    efficientnet_pytorch \
+    huggingface_hub==0.23.5 \
+    warmup_scheduler \
+    diffusers==0.11.1 \
+    numpy==1.24.4 \
+    sympy==1.11.1 \
+    scipy==1.10.1 \
+    bagpy \
+    networkx==3.1 \
+    prettytable
 
 ARG CACHE_BUST=1
 COPY ./setup.sh /tmp/setup.sh
