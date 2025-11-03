@@ -7,6 +7,21 @@ _BOLD='\e[33m'
 _RED='\e[31m'
 clear
 
+CHOOSE=1
+MODEL=1
+image_tag=safe_gmn:dev
+container_name=safe_gmn
+
+function CHOOSE_MODEL()
+{
+    echo -e "${_BOLD}--------------------------${_NORMAL}"
+    echo -e "\e[1;10H Choose Model${_NORMAL}"
+    echo -e "${_GREEN} 1.VinT/NoMaD/GNM${_NORMAL}"
+    echo -e "${_GREEN} 2.Remotevisualizer${_NORMAL}"
+    echo -e "${_BOLD}--------------------------${_NORMAL}"
+    echo -n "Your chose(1-2):"
+}
+
 
 function PRINT_MENU()
 {
@@ -62,7 +77,7 @@ function start_image()
     docker run -it --rm --network=host \
                 -v /dev:/dev \
                 --privileged \
-                --name ${container_name}_1 \
+                --name ${container_name}_2 \
                 --device-cgroup-rule="a *:* rmw" \
                 --volume=/tmp/.X11-unix:/tmp/.X11-unix -v ${XAUTH}:${XAUTH} \
                 -e XAUTHORITY=${XAUTH} \
@@ -82,7 +97,7 @@ function attach_terminal()
 {
     # give docker root user X11 permissions
     # docker exec -it ${container_name} /bin/bash
-    docker exec -it ${container_name}_1 /bin/bash 
+    docker exec -it ${container_name}_2 /bin/bash 
 }
 
 function backup_container()
@@ -145,10 +160,25 @@ function delete_container()
 
 
 
+CHOOSE_MODEL
 
-model_type=NoMad
-image_tag=nomad:dev
-container_name=nomad
+read MODEL
+
+case "${MODEL}" in
+    1)
+    model_type=NoMad
+    image_tag=nomad:dev
+    container_name=nomad
+    ;;
+    2)
+    model_type=remotevisualizer
+    image_tag=remotevisualizer:dev
+    container_name=remotevisualizer
+    ;;
+
+esac
+
+clear
 
 
 PRINT_MENU

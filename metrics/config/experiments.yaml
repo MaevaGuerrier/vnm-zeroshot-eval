@@ -1,41 +1,68 @@
 robots:
-  limo:
+  bunker:
     topics:
-      odom: "/odom"
+      odom: "/lvi_sam/lidar/mapping/odometry"
       reached_goal: "/topoplan/reached_goal"
-      cmd_teleop: /cmd_vel_teleop
-      cmd_model: /cmd_vel_navigate
+      cmd_model: /cmd_vel
       closest_node: "/closest_node"
     data_header:
       odom:
         pose_x: pose.pose.position.x
         pose_y: pose.pose.position.y
-        time_odom: Time
-      cmd_teleop:
-        lin_x_teleop: linear.x
-        lin_y_teleop: linear.y
-        time_teleop: Time
+        Time: Time
       cmd_model:
         lin_x_model: linear.x
         lin_y_model: linear.y
-        time_model: Time
+        Time: Time
       closest_node:
         closest_node: data
-        time_closest_node: Time
+        Time: Time
       reached_goal:
         goal: data
-        time_goal: Time
+        Time: Time
     process_bag_metrics:
       img_process_func: "process_custom_img"
       odom_process_func: "nav_to_xy_yaw"
-      image_topic: "/camera/image_raw" # Needed for closest node plotting
+      image_topic: "/usb_cam/image_raw" # Needed for closest node plotting
+  # limo:
+  #   topics:
+  #     odom: "/odom"
+  #     reached_goal: "/topoplan/reached_goal"
+  #     cmd_teleop: /cmd_vel_teleop
+  #     cmd_model: /cmd_vel #/cmd_vel_navigate
+  #     closest_node: "/closest_node"
+  #   data_header:
+  #     odom:
+  #       pose_x: pose.pose.position.x
+  #       pose_y: pose.pose.position.y
+  #       Time: Time
+  #     cmd_teleop:
+  #       lin_x_teleop: linear.x
+  #       lin_y_teleop: linear.y
+  #       Time: Time
+  #     cmd_model:
+  #       lin_x_model: linear.x
+  #       lin_y_model: linear.y
+  #       Time: Time
+  #     closest_node:
+  #       closest_node: data
+  #       Time: Time
+  #     reached_goal:
+  #       goal: data
+  #       Time: Time
+  #   process_bag_metrics:
+  #     img_process_func: "process_custom_img"
+  #     odom_process_func: "nav_to_xy_yaw"
+  #     image_topic: "/camera/image_raw" # Needed for closest node plotting
 
+# robot_names: ['limo']
+robot_names: ['bunker']
 
 environments:
   sim:
     - clearpath_playpen
   indoor:
-    - mist_office_v1
+    - mist_corridor
     - hallway
   outdoor:
     - parking_lot

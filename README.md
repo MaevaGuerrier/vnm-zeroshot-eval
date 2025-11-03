@@ -53,6 +53,16 @@ At root of your git folder simpy use the command `git submodule foreach git pull
 `./navigate.sh '--dir <topo_dir>'`
 
 
+# Cameras 
+
+## OAK-D pro 
+
+View [src](https://docs.luxonis.com/software-v3/depthai/ros/depthai-ros/) 
+```
+sudo apt install ros-<distro>-depthai-ros
+```
+
+
 # ROS2 
 
 ```
