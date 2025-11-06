@@ -18,7 +18,11 @@ def filter_start_stop(df):
     # Group by (robot, environment, augmentation)
     for (robot, env, aug), group in df.groupby(["robot", "environment", "augmentation"], sort=False):
     
-        group = group.sort_values("time_model").reset_index(drop=True)
+        # if aug == "reference":
+        #     trimmed_dfs.append(group)
+        #     continue
+
+        # group = group.sort_values("time_model").reset_index(drop=True)
 
         motion_mask = (group["lin_x_model"] != 0.0) | (group["lin_y_model"] != 0.0)
         start_idx = motion_mask.idxmax() if motion_mask.any() else None
@@ -91,6 +95,11 @@ def load_all_data(base_dir, env_map, config):
             continue
 
         robot_name = robot_dir.name
+        if robot_name not in config["robot_names"]:
+            continue
+
+        print(f"Processing robot {robot_name}")
+
         robot_cfg = config["robots"][robot_name]
         config_data_header = robot_cfg["data_header"]
 
@@ -106,7 +115,9 @@ def load_all_data(base_dir, env_map, config):
 
             for aug_dir in env_dir.iterdir():
                 aug_name = aug_dir.name
+                print(f"[INFO] Processing {robot_name} - {env_name} - {aug_name}")
                 dfs = []
+                ref_df = None
 
                 for csv_file in aug_dir.glob(f"{robot_name}_{env_name}_{aug_name}_*.csv"):
                     df = pd.read_csv(csv_file)
@@ -116,15 +127,43 @@ def load_all_data(base_dir, env_map, config):
                         rename_map = config_data_header[topic_key]
                         rename_map = {v: k for k, v in rename_map.items()}
                         df = df.rename(columns=rename_map)
+                        df = df[list(rename_map.values())]
 
+                        print(df.columns)
+                        
+
+                    if topic_key == "odom":
+                        odom_df = df.copy()
+                        continue
+                
                     dfs.append(df)
+
+                if aug_name == "reference":
+                    ref_df = odom_df.copy()
+                    ref_df["robot"] = robot_name
+                    ref_df["environment"] = env_name
+                    ref_df["env_type"] = env_type
+                    ref_df["augmentation"] = aug_name
+                    # print("REFERENCE COLUMNS:")
+                    # print(ref_df.columns)
 
                 if not dfs:
                     continue
 
-                merged_df = pd.concat(dfs, axis=1)
 
+                merged_df = odom_df
+                for df in dfs:
+                    merged_df = pd.merge_asof(
+                        merged_df,
+                        df,
+                        on="Time",
+                        direction="nearest",
+                        tolerance=0.2,
+                    )
 
+                print(f"AUG NAME: {aug_name}")
+                print(merged_df.columns)
+                print("-------------------------------------------------")
                 ensure_columns(merged_df, all_target_columns)
                 merged_df = merged_df[all_target_columns]
 
@@ -133,9 +172,11 @@ def load_all_data(base_dir, env_map, config):
                 merged_df["env_type"] = env_type
                 merged_df["augmentation"] = aug_name
 
-                merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
+                # merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
                 all_data.append(merged_df)
-
+                if ref_df is not None:
+                    all_data.append(ref_df)
+                
     if not all_data:
         raise ValueError("No data found!")
 
@@ -188,11 +229,16 @@ def main():
         
 
     df = load_all_data(config["paths"]["dataframes_dir"], env_map, config)
+    print(df["augmentation"].unique())
     # print(df.head())
     filtered_df = filter_start_stop(df)
     # print(filtered_df.head())
     timestamp = time.strftime("%Y%m%d-%H%M%S")
-    filtered_df.to_csv(f"{config['paths']['dataframes_dir']}all_data_{timestamp}.csv", index=False)
+    filtered_df['lin_x_model'].fillna(0.0, inplace=True)
+    filtered_df['lin_y_model'].fillna(0.0, inplace=True)
+    filtered_df['goal'].fillna(False, inplace=True)
+    print(filtered_df["augmentation"].unique())
+    # filtered_df.to_csv(f"{config['paths']['dataframes_dir']}all_data_{timestamp}.csv", index=False)
 
 
 if __name__ == "__main__":

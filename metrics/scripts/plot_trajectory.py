@@ -366,11 +366,17 @@ if __name__ == "__main__":
 
     config = load_config()
     root_path = config["paths"]["dataframes_dir"] # TODO 
-    df = pd.read_csv(f"../dataframes/all_data_20251014-180242.csv") #Index(['pose_x', 'pose_y', 'goal', 'robot', 'environment', 'env_type','augmentation'],
+    df_limo = pd.read_csv(f"../dataframes/all_data_20251014-180242.csv") #Index(['pose_x', 'pose_y', 'goal', 'robot', 'environment', 'env_type','augmentation'],
+    df_bunker = pd.read_csv(f"../dataframes/all_data_20251029-030058.csv") 
 
 
+   
+    df_bunker['augmentation'].replace({'sunFlare_physic': 'sunflare'}, inplace=True)
+    df_bunker['augmentation'].replace({'rain_torrential': 'rain'}, inplace=True)
 
-    print(df.head())
+    df = df_bunker
+
+    print(df["augmentation"].unique())
 
     #PLOTS ODOMETRY BY ROBOT AND ENVIRONMENT
     for robot in df["robot"].unique():
@@ -378,9 +384,17 @@ if __name__ == "__main__":
         for env in robot_df["environment"].unique():
             env_df = robot_df[robot_df["environment"] == env]
             # import ipdb; ipdb.set_trace()
-            # plot_odometry_wo_overtake(df=env_df, title=f"{robot} - {env}", save_path=f"../medias/odometry_{robot}_{env}.png")
+            ref_df = pd.read_csv("/workspace//metrics/dataframes/bunker/mist_corridor/reference/bunker_mist_corridor_reference_odom.csv")
+            ref_df = ref_df[['pose.pose.position.x', 'pose.pose.position.y']].rename(columns={
+                'pose.pose.position.x': 'pose_x',
+                'pose.pose.position.y': 'pose_y'
+            })
+            ref_df['augmentation'] = 'reference'
+            env_df = pd.concat([env_df, ref_df], ignore_index=True)
+
+            plot_odometry_wo_overtake(df=env_df, title=f"{robot} - {env}", save_path=f"../medias/odometry_{robot}_{env}.png")
             # plot_closest_node(df=env_df, title=f"{robot} - {env}", save_path=f"../medias/closest_node_{robot}_{env}.png")
-            plot_3d_trajectories(df)
+            # plot_3d_trajectories(df)
 
 
     # # PLOT DISTANCE FROM GOAL BASED ON LAST POSITION IN DF
