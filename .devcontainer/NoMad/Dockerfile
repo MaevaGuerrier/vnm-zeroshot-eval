@@ -64,7 +64,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-noetic-teleop-twist-keyboard \
     && rm -rf /var/lib/apt/lists/*
 
-
+# try to run python -m pip install --upgrade pip setuptools wheel
+RUN pip install --upgrade pip setuptools wheel 
 
 RUN pip install \
     "fsspec<2024.0.0" \
@@ -90,7 +91,10 @@ RUN pip install \
     scipy==1.10.1 \
     bagpy \
     networkx==3.1 \
-    prettytable
+    prettytable \
+    onnx \
+    onnxruntime-gpu==1.19
+
 
 ARG CACHE_BUST=1
 COPY ./setup.sh /tmp/setup.sh

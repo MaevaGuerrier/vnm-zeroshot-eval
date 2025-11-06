@@ -60,3 +60,14 @@ cd /workspace
 # Run the simulation
 From workspace `cd src/visualnav-transformer/deployment/src`.
 Then run `./navigate.sh "--dir [topomap_dir]"`.
+
+# Torch to OMMX
+You can create a `export_to_onnx.py`-like file to get a `.onnx` from a `.pth` model. Then, you can install :
+`
+pip install onnx onnxruntime-gpu==1.19
+`
+It is possible that you have to run :
+`
+# try to run python -m pip install --upgrade pip setuptools wheel
+pip -m install --upgrade pip setuptools wheel
+`
