@@ -4,7 +4,9 @@ numpy==1.24.3
 chex==0.1.85
 optax==0.1.5
 jax==0.4.20
+--find-links https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 jaxlib==0.4.20
+--find-links https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
 distrax==0.1.5
 ml_collections>=0.1.0
 setuptools>=65,<68
@@ -20,13 +22,13 @@ robo-gym-server-modules
 flax==0.7.5
 tensorflow_text
 rich>=11.1
-scipy==1.10.1
+scipy==1.12
 matplotlib==3.5.1
 imageio
 moviepy
 pillow
 pydantic<2
-opencv-python
+opencv-python-headless
 plotly
 absl-py
 typing_extensions

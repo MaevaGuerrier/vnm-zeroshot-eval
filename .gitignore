@@ -9,6 +9,15 @@ crossformer/assets/chunk/
 *.bag
 src/*
 
+# Crossformer asssets 
+
+cross_assets.zip
+cross_assets/
+cross_assets/*
+*.msgpack
+*.pkl
+
+
 # ROS2 WORKSPACE 
 
 ros2_ws/build/
