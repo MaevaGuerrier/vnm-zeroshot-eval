@@ -1,5 +1,10 @@
 # PROJECT
 
+lib64
+pyvenv.cfg
+ttx.1
+
+
 safeGNM/
 mist_sim_ws/*
 datasets/*

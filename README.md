@@ -275,3 +275,113 @@ timm
 tqdm
 trimesh
 ```
+
+
+
+# HABITAT 
+
+# We require python>=3.9 and cmake>=3.14
+conda create -n habitat python=3.9 cmake=3.14.0
+conda activate habitat
+
+# for newer we might need nightly instead
+conda install habitat-sim withbullet -c conda-forge -c aihabitat
+
+
+git clone --branch stable https://github.com/facebookresearch/habitat-lab.git
+cd habitat-lab
+pip install -e habitat-lab  # install habitat_lab
+
+pip install pillow==10.4.0
+
+
+
+
+## Testing non intereactive 
+
+python -m habitat_sim.utils.datasets_download --uids habitat_test_scenes --data-path data/
+
+python -m habitat_sim.utils.datasets_download --uids habitat_test_pointnav_dataset --data-path data/
+
+
+If **ValueError: Requested RearrangeDataset config paths 'data/datasets/replica_cad/rearrange/v2/train/rearrange_easy.json.gz' or 'data/replica_cad/' are not downloaded locally. Aborting.** when running python examples/example.py 
+
+Do the following: 
+
+python -m habitat_sim.utils.datasets_download --uids replica_cad_dataset --data-path data/
+
+
+python -m habitat_sim.utils.datasets_download --uids rearrange_dataset_v2 --data-path data/
+
+
+
+
+
+
+## Trouble shooting 
+
+<!-- pip install --upgrade pip setuptools wheel -->
+
+
+
+python3 -m venv habitat_env
+
+source habitat_env/bin/activate 
+
+
+cmake --version 
+cmake >= 3.10
+
+CMake Error at deps/glfw/CMakeLists.txt:206 (message):
+  RandR headers not found; install libxrandr development package
+
+SOL -> sudo apt-get install xorg-dev libglu1-mesa-dev
+
+
+
+CMake Error at /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:230 (message):
+  Could NOT find EGL (missing: EGL_LIBRARY EGL_INCLUDE_DIR)
+Call Stack (most recent call first):
+  /usr/share/cmake-3.28/Modules/FindPackageHandleStandardArgs.cmake:600 (_FPHSA_FAILURE_MESSAGE)
+  deps/magnum/modules/FindEGL.cmake:65 (find_package_handle_standard_args)
+  deps/magnum/src/Magnum/Platform/CMakeLists.txt:110 (find_package)
+
+
+SOL -> sudo apt-get install -y libegl1-mesa-dev libgles2-mesa-dev
+
+
+Could NOT find Assimp (missing: Assimp_LIBRARY Assimp_INCLUDE_DIR)
+SOL -> sudo apt-get install -y libassimp-dev
+
+
+git clone https://github.com/facebookresearch/habitat-sim.git
+
+cd habitat-sim
+
+pip install -r requirements.txt
+
+<!-- pip install setuptools==59.5.0 -->
+
+pip install --upgrade setuptools # means b4 pip install setuptools
+
+python setup.py --bullet --with-cuda build_ext --parallel 8 install --cmake-args="-DUSE_SYSTEM_ASSIMP=ON"
+
+
+## Testing install habitat sim 
+
+sudo apt install git-lfs
+
+git lfs install
+
+mkdir ../habitat_scenes
+
+python -m habitat_sim.utils.datasets_download --uids habitat_test_scenes --data-path ../habitat_scenes
+sawd
+python -m habitat_sim.utils.datasets_download --uids habitat_example_objects --data-path ../habitat_scenes
+
+python examples/viewer.py --scene ../habitat_scenes/scene_datasets/habitat-test-scenes/skokloster-castle.glb
+
+
+**Troubleshooting** 
+
+UNresponsive keys
