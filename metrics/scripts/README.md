@@ -23,6 +23,14 @@ pip install pillow torchvision
 
 
 
+# Image analysis
+
+
+**This assumes you are running the code within the docker for the model (Nomad, Vint, Crossformer)**
+
+
+
+
 # Troubleshooting
 
 

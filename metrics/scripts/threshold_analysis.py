@@ -10,6 +10,11 @@ from collections import defaultdict
 import time
 import argparse
 import sys
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+
 
 # TODO If time do proper logging 
 # import logging
@@ -271,6 +276,55 @@ def create_dataframes_from_bags():
 
 
 
+
+def plot_trajectories_trials(df):
+
+    # Group by robot/environment/configuration
+    group_cols = ["robot", "environment", "configuration"]
+
+    for (robot, environment, configuration), group_df in df.groupby(group_cols):
+        # unique threshold-radius pairs
+        unique_pairs = group_df[["threshold", "radius"]].drop_duplicates().values
+
+        n_pairs = len(unique_pairs)
+        n_cols = 3  # adjust depending on how many subplots you want per row
+        n_rows = (n_pairs + n_cols - 1) // n_cols
+
+        fig, axes = plt.subplots(n_rows, n_cols, figsize=(5 * n_cols, 5 * n_rows))
+        axes = axes.flatten()
+
+        for i, (thres, rad) in enumerate(unique_pairs):
+            ax = axes[i]
+            sub_df = group_df[(group_df["threshold"] == thres) & (group_df["radius"] == rad)]
+
+            # Plot all trials for this threshold-radius combination
+            for trial, trial_df in sub_df.groupby("trial"):
+                ax.plot(
+                    trial_df["pose_x"], trial_df["pose_y"],
+                    label=f"trial {trial}",
+                    alpha=0.8
+                )
+
+            ax.set_title(f"thres={thres}, rad={rad}")
+            ax.set_xlabel("pose_x")
+            ax.set_ylabel("pose_y")
+            ax.grid(True)
+            ax.axis("equal")
+            ax.legend(fontsize=8)
+
+        # Hide any unused subplots
+        for j in range(i + 1, len(axes)):
+            fig.delaxes(axes[j])
+
+        fig.suptitle(f"Robot: {robot} | Env: {environment} | Config: {configuration}", fontsize=14)
+        fig.tight_layout(rect=[0, 0, 1, 0.97])
+        plt.show()
+
+
+
+
+
+
 if __name__ == "__main__":
 
     
@@ -305,6 +359,9 @@ if __name__ == "__main__":
 
     elif args.plot:
         print("You selected plotting")
+        config = load_config(config_name="parameters.yaml")
+        df = pd.read_csv(f"{config['paths']['dataframes_dir']}all_data_latest.csv")
+        plot_trajectories_trials(df)
 
 
 

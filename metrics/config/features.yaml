@@ -1,0 +1,6 @@
+models:
+  nomad:
+    weights_path: "/workspace/src/visualnav-transformer/deployment/model_weights/nomad.pth"
+    model_config_path: "/workspace/src/visualnav-transformer/train/config/nomad.yaml"
+    robot_config_path: "/workspace/src/visualnav-transformer/deployment/config/robot.yaml"
+    topomap_path: "/workspace/src/visualnav-transformer/deployment/topomaps/images/"

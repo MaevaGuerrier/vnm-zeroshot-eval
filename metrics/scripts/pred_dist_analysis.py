@@ -397,17 +397,14 @@ if __name__ == "__main__":
 
 
 
-
-
-
     # #SINGLE PLOT EXAMPLES
-    actual_df = df[(df["robot"] == "limo") & (df["environment"] == "clearpath_playpen") & (df["augmentation"] == "no_augmentation")]
+    actual_df = df[(df["robot"] == "bunker") & (df["environment"] == "mist_corridor") & (df["augmentation"] == "no_augmentation")]
     reference_df = limo_clearpath_playpen_nodes_reference_df
     plot_single_node_comparaison(df=actual_df, reference_df=reference_df)
     
     # #Plot 2: With error visualization
     node_errors = compute_node_errors(df, reference_nodes)
-    node_errors = node_errors[(node_errors["robot"] == "limo") & (node_errors["environment"] == "clearpath_playpen") & (node_errors["augmentation"] == "no_augmentation")]["node_error"].values
+    node_errors = node_errors[(node_errors["robot"] == "bunker") & (node_errors["environment"] == "mist_corridor") & (node_errors["augmentation"] == "no_augmentation")]["node_error"].values
     fig2, ax2 = plot_trajectory_with_errors(reference_df, actual_df, node_errors,
                                            "Trajectory with Node Prediction Errors")
     
