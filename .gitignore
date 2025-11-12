@@ -1,7 +1,7 @@
 # PROJECT
 
 safeGNM/
-sim/*
+mist_sim_ws/*
 datasets/*
 
 crossformer/assets/chunk/
