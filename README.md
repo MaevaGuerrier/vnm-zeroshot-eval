@@ -280,45 +280,8 @@ trimesh
 
 # HABITAT 
 
-# We require python>=3.9 and cmake>=3.14
-conda create -n habitat python=3.9 cmake=3.14.0
-conda activate habitat
 
-# for newer we might need nightly instead
-conda install habitat-sim withbullet -c conda-forge -c aihabitat
-
-
-git clone --branch stable https://github.com/facebookresearch/habitat-lab.git
-cd habitat-lab
-pip install -e habitat-lab  # install habitat_lab
-
-pip install pillow==10.4.0
-
-
-
-
-## Testing non intereactive 
-
-python -m habitat_sim.utils.datasets_download --uids habitat_test_scenes --data-path data/
-
-python -m habitat_sim.utils.datasets_download --uids habitat_test_pointnav_dataset --data-path data/
-
-
-If **ValueError: Requested RearrangeDataset config paths 'data/datasets/replica_cad/rearrange/v2/train/rearrange_easy.json.gz' or 'data/replica_cad/' are not downloaded locally. Aborting.** when running python examples/example.py 
-
-Do the following: 
-
-python -m habitat_sim.utils.datasets_download --uids replica_cad_dataset --data-path data/
-
-
-python -m habitat_sim.utils.datasets_download --uids rearrange_dataset_v2 --data-path data/
-
-
-
-
-
-
-## Trouble shooting 
+## habitat sim
 
 <!-- pip install --upgrade pip setuptools wheel -->
 
@@ -358,7 +321,9 @@ git clone https://github.com/facebookresearch/habitat-sim.git
 
 cd habitat-sim
 
-pip install -r requirements.txt
+pip install -r requirements.txt 
+
+# CONTINUE BELOW
 
 <!-- pip install setuptools==59.5.0 -->
 
@@ -376,7 +341,7 @@ git lfs install
 mkdir ../habitat_scenes
 
 python -m habitat_sim.utils.datasets_download --uids habitat_test_scenes --data-path ../habitat_scenes
-sawd
+
 python -m habitat_sim.utils.datasets_download --uids habitat_example_objects --data-path ../habitat_scenes
 
 python examples/viewer.py --scene ../habitat_scenes/scene_datasets/habitat-test-scenes/skokloster-castle.glb
@@ -384,4 +349,36 @@ python examples/viewer.py --scene ../habitat_scenes/scene_datasets/habitat-test-
 
 **Troubleshooting** 
 
-UNresponsive keys
+Unresponsive keys -> make sure you click on viewer and then press keyboard keys
+
+
+# Habitat lab 
+
+git clone --branch stable https://github.com/facebookresearch/habitat-lab.git
+
+cd habitat-lab/habitat-lab
+
+pip install -r requirements.txt
+
+python install -e .
+
+
+
+**issue**
+ValueError: Requested RearrangeDataset config paths 'data/datasets/replica_cad/rearrange/v2/train/rearrange_easy.json.gz' or 'data/replica_cad/' are not downloaded locally. Aborting.
+
+
+https://github.com/facebookresearch/habitat-lab/issues/2100
+python -m habitat_sim.utils.datasets_download --uids replica_cad_dataset --data-path data/
+python -m habitat_sim.utils.datasets_download --uids rearrange_dataset_v2 --data-path data/
+python -m habitat_sim.utils.datasets_download --uids hab_fetch --data-path data/
+python -m habitat_sim.utils.datasets_download --uids ycb --data-path data/
+
+
+Environment creation successful
+[10:51:01:376042]:[Error]:[Metadata] AOAttributesManager.cpp(199)::preRegisterObjectFinalize : ArticulatedObjectAttributes template named `data/robots/hab_fetch/robots/hab_suction.urdf` specifies the URDF Filepath `data/robots/hab_fetch/robots/hab_suction.urdf` full path ``, but this file cannot be found, so registration is aborted.
+[1]    55491 segmentation fault (core dumped)  python examples/example.py
+
+
+
+python -m habitat_sim.utils.datasets_download --uids rearrange_task_assets --data-path data/
