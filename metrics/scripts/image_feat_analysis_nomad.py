@@ -32,48 +32,89 @@ def _load_topomap(topomap_dir: str, topomap_name: str, goal_node: int) -> Tuple[
 
 
 
-def get_image_features(model, model_config, image: PILImage.Image, goal_image: PILImage.Image, device: torch.device) -> torch.Tensor:
+def get_goal_features(model, model_config, image: PILImage.Image, goal_image: PILImage.Image, device: torch.device, current_obs: PILImage.Image = None) -> torch.Tensor:
     context_queue = []
-    features = None
+    goal_features = None
 
-    while len(context_queue) <= model_config["context_size"]:
+    # Replicating the same behavior as in navigate.py but effectively goal_obs will only look at current_obs
+    while len(context_queue) < model_config["context_size"] + 1: # see navigate.py callback_obs function
         context_queue.append(image)
     
+    # if current_obs is None:
+    #     current_obs = image
+
+    # context_queue.append(current_obs)  # add current observation at the end
+    # print("Context queue length for goal features:", len(context_queue))
+
     # same
     # print(model.vision_encoder.context_size)
     # print(model_config["context_size"])
 
-    if len(context_queue) > model_config["context_size"]:
+    with torch.no_grad():
+        # Preprocess both obs and goal images the same way as training
+        obs_img = transform_images(context_queue, model_config["image_size"], center_crop=False).to(device)
+        print("obs_img shape:", obs_img.shape)
+        goal_img = transform_images(goal_image, model_config["image_size"], center_crop=False).to(device)
 
-        obs_images = transform_images(context_queue, model_config["image_size"], center_crop=False)
-        obs_images = torch.split(obs_images, 3, dim=1)
-        obs_images = torch.cat(obs_images, dim=1) 
-        obs_images = obs_images.to(device)
+        last_frame = obs_img[:, 3*model_config["context_size"]:, :, :] #
+        obsgoal_img = torch.cat([last_frame, goal_img], dim=1)
 
-        with torch.no_grad():
-            # Preprocess both obs and goal images the same way as training
-            obs_img = transform_images(context_queue, model_config["image_size"], center_crop=False).to(device)
-            goal_img = transform_images(goal_image, model_config["image_size"], center_crop=False).to(device)
+        # obs_img shape: torch.Size([1, 18, 96, 96])
+        # goal_img shape: torch.Size([1, 3, 96, 96])
+        # last_frame shape: torch.Size([1, 3, 96, 96])
+        # obsgoal_img shape: torch.Size([1, 6, 96, 96])
 
-            # Concatenate last observation frame with the goal image (same as in forward)
-            obsgoal_img = torch.cat([obs_img[:, 3*model_config["context_size"]:, :, :], goal_img], dim=1)
+        features = model.vision_encoder.goal_encoder.extract_features(obsgoal_img)
+        features = model.vision_encoder.goal_encoder._avg_pooling(features)
 
-            # Extract goal features exactly as the model does
-            features = model.vision_encoder.goal_encoder.extract_features(obsgoal_img)
-            features = model.vision_encoder.goal_encoder._avg_pooling(features)
+        if model.vision_encoder.goal_encoder._global_params.include_top:
+            features = features.flatten(start_dim=1)
+            features = model.vision_encoder.goal_encoder._dropout(features)
 
-            if model.vision_encoder.goal_encoder._global_params.include_top:
-                features = features.flatten(start_dim=1)
-                features = model.vision_encoder.goal_encoder._dropout(features)
+        goal_features = model.vision_encoder.compress_goal_enc(features) # see nomad_vint.py line 47
 
-            features = model.vision_encoder.compress_goal_enc(features)
-
-    return features
+    return goal_features
 
 
 
 
 
+
+
+def get_image_features(model, model_config, past_obs: PILImage.Image, device: torch.device, current_obs: PILImage.Image) -> torch.Tensor:
+    context_queue = []
+    obs_features = None
+
+    if current_obs is None:
+        current_obs = past_obs
+
+    while len(context_queue) < model_config["context_size"] + 1: # see navigate.py callback_obs function
+        context_queue.append(past_obs)
+    # print("Context queue length:", len(context_queue)) # 5
+    # print(model.vision_encoder.context_size) # 3
+    # print(model_config["context_size"]) # 3
+
+    # Adding current observation as the last image in the context queue
+    context_queue.append(current_obs) # 6 like in the paper where 6 is current obs
+ 
+
+    obs_images = transform_images(context_queue, model_config["image_size"], center_crop=False).to(device)
+    obs_images = torch.split(obs_images, 3, dim=1)
+    obs_images = torch.cat(obs_images, dim=0)            
+
+    with torch.no_grad():
+        # Run through observation encoder
+        obs_features = model.vision_encoder.obs_encoder.extract_features(obs_images)
+        obs_features = model.vision_encoder.obs_encoder._avg_pooling(obs_features)
+
+        if model.vision_encoder.obs_encoder._global_params.include_top:
+            obs_features = obs_features.flatten(start_dim=1)
+            obs_features = model.vision_encoder.obs_encoder._dropout(obs_features)
+
+        # Final projection to obs_encoding_size
+        obs_features = model.vision_encoder.compress_obs_enc(obs_features) # see nomad_vint.py line 41
+
+    return obs_features
 
 
 
@@ -96,89 +137,162 @@ def main(args):
 
     
     # topomap, goal_node = _load_topomap(topomap_dir=model_info["topomap_path"], topomap_name=args.topomap, goal_node=args.goal_node)
-    
-
     # print(model.__dict__)
     # print(model.vision_encoder.goal_encoder.__dict__)
-  
-
     # goal_img = topomap[goal_node]
 
-    goal_img_path = "/workspace/metrics/medias/ref_bunker_mist_corridor_3.png"
-    goal_image = PILImage.open(goal_img_path)
 
-    obs_img_path = "/workspace/metrics/medias/act_bunker_mist_corridor_3.png"
-    obs_last_img = PILImage.open(obs_img_path)
+    print("----------Analyzing goal image with each image in topomap: Similiraty should increase as images get closer to goal node ------------")
+
+    # model_goal_img_path = "/workspace/metrics/medias/ref_bunker_mist_corridor_3.png"
+    # model_goal_image = PILImage.open(model_goal_img_path)
 
 
-    feat_obs = get_image_features(model=model, model_config=model_config, image=obs_last_img, goal_image=goal_image, device=device)
-    feat_obs = feat_obs.cpu().numpy()
+    # for i in range(11):
+    #     print(f"------------------- Topomap bunker_mist_corridor image index: {i} --------------------")
 
-    feat_ref = get_image_features(model=model, model_config=model_config, image=goal_image, goal_image=goal_image, device=device)
-    feat_ref = feat_ref.cpu().numpy()
+    #     obs_img_path = f"/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_corridor/{i}.png"
+    #     obs_topomap = PILImage.open(obs_img_path)
+
+    #     print("Comparing observed goal from model and topomap images from start to end:")
+    #     feat_goal = get_goal_features(model=model, 
+    #                                 model_config=model_config, 
+    #                                 image=obs_topomap, 
+    #                                 goal_image=model_goal_image, 
+    #                                 device=device).cpu().numpy().squeeze()
+    #     print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
+    #     print("Analyzing encoder output from exact same images from topomap from start to end:")
+    #     feat_goal = get_goal_features(model=model, 
+    #                                 model_config=model_config, 
+    #                                 image=obs_topomap, 
+    #                                 goal_image=obs_topomap, 
+    #                                 device=device).cpu().numpy().squeeze()
+    #     print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
+
+
+    model_goal_img_path = "/workspace/metrics/medias/ref_bunker_mist_corridor_3.png"
+    model_goal_image = PILImage.open(model_goal_img_path)
+
+
+    for i in range(11):
+        print(f"------------------- Topomap bunker_mist_corridor image index: {i} --------------------")
+
+        obs_img_path = f"/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_corridor/{i}.png"
+        obs_topomap = PILImage.open(obs_img_path)
+
+        print("Comparing observed goal from model and topomap images from start to end:")
+        feat_goal = get_goal_features(model=model, 
+                                    model_config=model_config, 
+                                    image=obs_topomap, 
+                                    goal_image=model_goal_image, 
+                                    device=device).cpu().numpy().squeeze()
+        print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
+        print("Analyzing encoder output from exact same images from topomap from start to end:")
+        feat_goal = get_goal_features(model=model, 
+                                    model_config=model_config, 
+                                    image=obs_topomap, 
+                                    goal_image=obs_topomap, 
+                                    device=device).cpu().numpy().squeeze()
+        print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
+
+
+
+    # print("----------Analyzing same image passed to obs_encoder and goal encoder ------------")
+
+    # goal_img_path = "/workspace/metrics/medias/ref_bunker_mist_corridor_3.png"
+    # goal_image = PILImage.open(goal_img_path)
+
+    # obs_img_path = "/workspace/metrics/medias/act_bunker_mist_corridor_3.png"
+    # obs_last_img = PILImage.open(obs_img_path)
+
+    # feat_obs = get_image_features(model=model, 
+    #                               model_config=model_config, 
+    #                               past_obs=obs_last_img, 
+    #                               device=device, 
+    #                               current_obs=None).cpu().numpy().squeeze()
+
+    # feat_goal = get_goal_features(model=model, 
+    #                               model_config=model_config, 
+    #                               image=goal_image, 
+    #                               goal_image=goal_image, 
+    #                               device=device).cpu().numpy().squeeze()
+
+
+    # print("Feature of the observed image:", feat_obs.shape)
+    # print("Feature of the goal image:", feat_goal.shape)
+
+
+    # norms = np.linalg.norm(feat_obs, axis=1)
+    # print("Norms of the observation features:", norms)
+    # print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
+    # print("Shape of goal features:", feat_goal.shape)
+
+
+    # print("--------------Analyzing different images for goal encoder------------------")
+
+    # print("Test: Similar images but not identical")
+    # feat_goal = get_goal_features(model=model, 
+    #                               model_config=model_config, 
+    #                               image=obs_last_img, 
+    #                               goal_image=goal_image, 
+    #                               device=device).cpu().numpy().squeeze()
+    # print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
+    # print("Shape of goal features:", feat_goal.shape)
+
+
+    # print("Test: Closest img in topomap from actual")
+    # obs_img_path = "/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_corridor/9.png"
+    # obs_last_img = PILImage.open(obs_img_path)
+    # feat_goal = get_goal_features(model=model, 
+    #                               model_config=model_config, 
+    #                               image=obs_last_img, 
+    #                               goal_image=obs_last_img, 
+    #                               device=device).cpu().numpy().squeeze()
+    # print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
+    # print("Shape of goal features:", feat_goal.shape)
     
 
-    print("Feature of the observed image:", feat_obs.shape)
-    print("Feature of the goal image:", feat_ref.shape)
-
-
-    feat_obs = feat_obs.squeeze()
-    feat_ref = feat_ref.squeeze()
-
-    # Euclidean distance
-    # euclidean_dist = np.linalg.norm(feat_obs - feat_ref)
-
-    # # Cosine similarity
-    # cosine_sim = np.dot(feat_obs, feat_ref) / (np.linalg.norm(feat_obs) * np.linalg.norm(feat_ref))
-
-    # # L1 distance (Manhattan)
-    # l1_dist = np.sum(np.abs(feat_obs - feat_ref))
-
-    # # Normalized Euclidean (so you can compare across scales)
-    # normed_euc = euclidean_dist / (np.linalg.norm(feat_obs) + np.linalg.norm(feat_ref))
-
-
-    # Cosine similarity → how aligned the two embeddings are (1.0 means same direction, 0 means orthogonal).
-    # Euclidean distance → how far apart they are in the latent space.
-    # L1 distance → how much activation pattern differs dimension-wise.
-    # print(f"Euclidean distance: {euclidean_dist:.4f}") but I need more data
-    # print(f"Cosine similarity: {cosine_sim:.4f}") # Two vectors are orthogonal if their cosine similarity is 0 — meaning they encode completely independent information.
-    # print(f"L1 distance: {l1_dist:.4f}")
-    # print(f"Normalized Euclidean: {normed_euc:.4f}")
+    # print("SWICTH Test: Similar images but not identical")
+    # feat_goal = get_goal_features(model=model, 
+    #                               model_config=model_config, 
+    #                               image=goal_image, 
+    #                               goal_image=obs_last_img, 
+    #                               device=device).cpu().numpy().squeeze()
+    # print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
+    # print("Shape of goal features:", feat_goal.shape)
 
 
 
-    import matplotlib.pyplot as plt
-    from sklearn.decomposition import PCA
-    import numpy as np
+    # print("Test: Unrelated images ")
+    # goal_img_path = "/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_corridor/3.png"
+    # goal_image = PILImage.open(goal_img_path)
 
-    # Suppose feat_obs and feat_ref are (1,256)
-    features = np.vstack([feat_obs, feat_ref])
+    # obs_img_path = "/workspace/src/visualnav-transformer/deployment/topomaps/images/mist_office_v1/5.png"
+    # obs_last_img = PILImage.open(obs_img_path)
 
-    pca = PCA(n_components=2)
-    proj = pca.fit_transform(features)
-
-    plt.scatter(proj[0,0], proj[0,1], color='blue', label='Observation')
-    plt.scatter(proj[1,0], proj[1,1], color='red', label='Goal')
-    plt.plot(proj[:,0], proj[:,1], 'k--', alpha=0.5)
-    plt.legend()
-    plt.title("PCA Projection of Feature Vectors")
-    plt.show()
+    # feat_goal = get_goal_features(model=model, 
+    #                               model_config=model_config, 
+    #                               image=obs_last_img, 
+    #                               goal_image=goal_image, 
+    #                               device=device).cpu().numpy().squeeze()
+    # print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
+    # print("Shape of goal features:", feat_goal.shape)
 
 
+    # print("Test: Completely different images CSA Tunnel and Lab office")
+    # goal_img_path = "/workspace/src/visualnav-transformer/deployment/topomaps/images/csa_tunnel/0.png"
+    # goal_image = PILImage.open(goal_img_path)
 
+    # obs_img_path = "/workspace/src/visualnav-transformer/deployment/topomaps/images/new_lab/7.png"
+    # obs_last_img = PILImage.open(obs_img_path)
 
-
-
-
-
-
-
-
-
-
-
-
+    # feat_goal = get_goal_features(model=model, 
+    #                               model_config=model_config, 
+    #                               image=obs_last_img, 
+    #                               goal_image=goal_image, 
+    #                               device=device).cpu().numpy().squeeze()
+    # print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
+    # print("Shape of goal features:", feat_goal.shape)
 
 
 
