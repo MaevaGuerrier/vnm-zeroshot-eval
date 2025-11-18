@@ -43,11 +43,11 @@ def get_last_n_rgb_images(bag_path:str, image_topic:str, n=4) -> List[np.ndarray
 
 if __name__ == "__main__":
 
-    reference_bag_name = "bunker_mist_corridor_reference.bag"
-    actual_bag_name = "bunker_mist_corridor_blur.bag"
+    # reference_bag_name = "bunker_mist_corridor_reference.bag"
+    actual_bag_name = "bunker_mist_office_17nov_no_augmentation_rad_10_trial_4.bag"
 
 
-    reference_path = f"/workspace/metrics/bags/{reference_bag_name}"
+    # reference_path = f"/workspace/metrics/bags/{reference_bag_name}"
     actual_path = f"/workspace/metrics/bags/{actual_bag_name}"
 
     img_topic = "/usb_cam/image_raw"
@@ -55,9 +55,9 @@ if __name__ == "__main__":
 
     # Example
     # ref_img = get_last_rgb_image(reference_path, img_topic)
-    # act_img = get_last_rgb_image(actual_path, img_topic)
-    ref_imgs = get_last_n_rgb_images(reference_path, img_topic, n=4)
-    act_imgs = get_last_n_rgb_images(actual_path, img_topic, n=4)
+    act_img = get_last_rgb_image(actual_path, img_topic)
+    # ref_imgs = get_last_n_rgb_images(reference_path, img_topic, n=4)
+    # act_imgs = get_last_n_rgb_images(actual_path, img_topic, n=4)
 
     # print(f"Retrieved {len(ref_imgs)} reference images and {len(act_imgs)} actual images.")
     # print(f"ref img elm {type(ref_imgs[0])}")
@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     # Save for inspection
     # cv2.imwrite("/workspace/metrics/medias/reference_last.png", ref_img)
-    # cv2.imwrite("/workspace/metrics/medias/actual_last.png", act_img)
+    cv2.imwrite("/workspace/metrics/medias/bunker_mist_office_17nov_no_augmentation_rad_10_trial_4_last.png", act_img)
 
     # for i in range(len(ref_imgs)):
     #     cv2.imwrite(f"/workspace/metrics/medias/ref_bunker_mist_corridor_{i}.png", ref_imgs[i])

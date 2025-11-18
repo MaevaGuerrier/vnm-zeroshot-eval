@@ -170,31 +170,23 @@ def main(args):
     #     print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
 
 
-    model_goal_img_path = "/workspace/metrics/medias/ref_bunker_mist_corridor_3.png"
-    model_goal_image = PILImage.open(model_goal_img_path)
+    # model_goal_img_path = "/workspace/metrics/medias/bunker_mist_corridor_sunFlare_physic_last_obs.png"
+    # model_goal_image = PILImage.open(model_goal_img_path)
 
 
-    for i in range(11):
-        print(f"------------------- Topomap bunker_mist_corridor image index: {i} --------------------")
+    # for i in range(11):
+    #     print(f"------------------- Topomap bunker_mist_corridor_sunFlare_physic image index: {i} --------------------")
 
-        obs_img_path = f"/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_corridor/{i}.png"
-        obs_topomap = PILImage.open(obs_img_path)
+    #     obs_img_path = f"/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_corridor_sunFlare_physic/{i}.png"
+    #     obs_topomap = PILImage.open(obs_img_path)
 
-        print("Comparing observed goal from model and topomap images from start to end:")
-        feat_goal = get_goal_features(model=model, 
-                                    model_config=model_config, 
-                                    image=obs_topomap, 
-                                    goal_image=model_goal_image, 
-                                    device=device).cpu().numpy().squeeze()
-        print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
-        print("Analyzing encoder output from exact same images from topomap from start to end:")
-        feat_goal = get_goal_features(model=model, 
-                                    model_config=model_config, 
-                                    image=obs_topomap, 
-                                    goal_image=obs_topomap, 
-                                    device=device).cpu().numpy().squeeze()
-        print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
-
+    #     print("Comparing observed goal from model and topomap images from start to end:")
+    #     feat_goal = get_goal_features(model=model, 
+    #                                 model_config=model_config, 
+    #                                 image=obs_topomap, 
+    #                                 goal_image=model_goal_image, 
+    #                                 device=device).cpu().numpy().squeeze()
+    #     print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
 
 
     # print("----------Analyzing same image passed to obs_encoder and goal encoder ------------")
@@ -293,6 +285,187 @@ def main(args):
     #                               device=device).cpu().numpy().squeeze()
     # print("Norm of goal features:", np.linalg.norm(feat_goal), "\n")
     # print("Shape of goal features:", feat_goal.shape)
+
+
+    # print("--------------Analyzing radius 10, no_aug, rain_torrential, sunFlare_physic------------------")
+    # # print("NO_AUG")
+    # model_goal_image_path = "/workspace/metrics/medias/bunker_mist_office_17nov_no_augmentation_rad_10_trial_1_last.png"
+    # model_goal_image = PILImage.open(model_goal_image_path)
+    # for i in range(10):
+    #     print(f"------------------- Topomap bunker_mist_corridor_no_augmentation image index: {i} --------------------")
+
+    #     obs_img_path = f"/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_office_17nov/{i}.png"
+    #     obs_topomap = PILImage.open(obs_img_path)
+
+    #     print("Comparing observed goal from model and topomap images from start to end:")
+    #     feat_goal_1 = get_goal_features(model=model, 
+    #                                 model_config=model_config, 
+    #                                 image=obs_topomap, 
+    #                                 goal_image=model_goal_image, 
+    #                                 device=device).cpu().numpy().squeeze()
+    #     print("Norm of goal features:", np.linalg.norm(feat_goal_1), "\n")
+
+    #     print(f"Reference {i}:")
+    #     feat_goal_2 = get_goal_features(model=model, 
+    #                                     model_config=model_config, 
+    #                                     image=obs_topomap, 
+    #                                     goal_image=obs_topomap, 
+    #                                     device=device).cpu().numpy().squeeze()
+    #     print("Norm of Reference features:", np.linalg.norm(feat_goal_2))
+    #     print("Differences in norms:", np.linalg.norm(feat_goal_2) - np.linalg.norm(feat_goal_1), "\n")  
+
+    # print("RAIN_TORRENTIAL")
+    # model_goal_image_path = "/workspace/metrics/medias/bunker_mist_office_17nov_rain_torrential_rad_10_trial_1_last.png"
+    # model_goal_image = PILImage.open(model_goal_image_path)
+    # for i in range(10):
+    #     print(f"------------------- Topomap bunker_mist_corridor_rain_torrential image index: {i} --------------------")
+
+    #     obs_img_path = f"/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_office_17nov_rain_torrential/{i}.png"
+    #     obs_topomap = PILImage.open(obs_img_path)
+
+    #     print("Comparing observed goal from model and topomap images from start to end:")
+    #     feat_goal_1 = get_goal_features(model=model, 
+    #                                 model_config=model_config, 
+    #                                 image=obs_topomap, 
+    #                                 goal_image=model_goal_image, 
+    #                                 device=device).cpu().numpy().squeeze()
+    #     print("Norm of goal features:", np.linalg.norm(feat_goal_1), "\n")
+
+    #     print(f"Reference {i}:")
+    #     feat_goal_2 = get_goal_features(model=model, 
+    #                                     model_config=model_config, 
+    #                                     image=obs_topomap, 
+    #                                     goal_image=obs_topomap, 
+    #                                     device=device).cpu().numpy().squeeze()
+    #     print("Norm of Reference features:", np.linalg.norm(feat_goal_2))
+    #     print("Differences in norms:", np.linalg.norm(feat_goal_2) - np.linalg.norm(feat_goal_1), "\n")
+
+    # print("SUNFLARE_PHYSIC")
+    # model_goal_image_path = "/workspace/metrics/medias/bunker_mist_office_17nov_sunFlare_physic_rad_10_trial_2_last.png"
+    # model_goal_image = PILImage.open(model_goal_image_path)
+    # for i in range(10):
+    #     print(f"------------------- Topomap bunker_mist_corridor_sunFlare_physic image index: {i} --------------------")
+
+    #     obs_img_path = f"/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_office_17nov_sunFlare_physic/{i}.png"
+    #     obs_topomap = PILImage.open(obs_img_path)
+
+    #     print("Comparing observed goal from model and topomap images from start to end:")
+    #     feat_goal_1 = get_goal_features(model=model, 
+    #                                 model_config=model_config, 
+    #                                 image=obs_topomap, 
+    #                                 goal_image=model_goal_image, 
+    #                                 device=device).cpu().numpy().squeeze()
+    #     print("Norm of goal features:", np.linalg.norm(feat_goal_1), "\n")
+
+    #     print(f"Reference {i}:")
+    #     feat_goal_2 = get_goal_features(model=model, 
+    #                                     model_config=model_config, 
+    #                                     image=obs_topomap, 
+    #                                     goal_image=obs_topomap, 
+    #                                     device=device).cpu().numpy().squeeze()
+    #     print("Norm of Reference features:", np.linalg.norm(feat_goal_2))
+    #     print("Differences in norms:", np.linalg.norm(feat_goal_2) - np.linalg.norm(feat_goal_1), "\n")
+
+
+
+    print("--------------Analyzing distances at model observe goal image and topomap images------------------")
+    # print("NO_AUG")
+    # model_goal_image_path = "/workspace/metrics/medias/bunker_mist_office_17nov_no_augmentation_rad_10_trial_4_last.png"
+    # model_goal_image = PILImage.open(model_goal_image_path)
+
+    # with open('/workspace/metrics/medias/bunker_mist_office_17nov_no_augmentation_rad_10_trial_4_last_distances.npy', 'rb') as f:
+    #         dists = np.load(f)
+    #         print("Distances:", dists)
+
+    # for i in range(10):
+    #     print(f"------------------- Topomap bunker_mist_corridor_no_augmentation image index: {i} --------------------")
+
+    #     obs_img_path = f"/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_office_17nov/{i}.png"
+    #     obs_topomap = PILImage.open(obs_img_path)
+
+    #     print("Comparing observed goal from model and topomap images from start to end:")
+    #     feat_goal_1 = get_goal_features(model=model, 
+    #                                 model_config=model_config, 
+    #                                 image=obs_topomap, 
+    #                                 goal_image=model_goal_image, 
+    #                                 device=device).cpu().numpy().squeeze()
+    #     print("Norm of goal features:", np.linalg.norm(feat_goal_1))
+
+    #     print(f"Reference {i}:")
+    #     feat_goal_2 = get_goal_features(model=model, 
+    #                                     model_config=model_config, 
+    #                                     image=obs_topomap, 
+    #                                     goal_image=obs_topomap, 
+    #                                     device=device).cpu().numpy().squeeze()
+    #     print("Norm of Reference features:", np.linalg.norm(feat_goal_2))
+    #     print("Differences in norms:", np.linalg.norm(feat_goal_2) - np.linalg.norm(feat_goal_1))
+
+
+    # print("RAIN_TORRENTIAL")
+    # model_goal_image_path = "/workspace/metrics/medias/bunker_mist_office_17nov_rain_torrential_rad_10_trial_4_last.png"
+    # model_goal_image = PILImage.open(model_goal_image_path)
+
+    # with open('/workspace/metrics/medias/bunker_mist_office_17nov_rain_torrential_rad_10_trial_4_last_distances.npy', 'rb') as f:
+    #         dists = np.load(f)
+    #         print("Distances:", dists)
+
+    # for i in range(10):
+    #     print(f"------------------- Topomap bunker_mist_corridor_rain_torrential image index: {i} --------------------")
+
+    #     obs_img_path = f"/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_office_17nov_rain_torrential/{i}.png"
+    #     obs_topomap = PILImage.open(obs_img_path)
+
+    #     print("Comparing observed goal from model and topomap images from start to end:")
+    #     feat_goal_1 = get_goal_features(model=model, 
+    #                                 model_config=model_config, 
+    #                                 image=obs_topomap, 
+    #                                 goal_image=model_goal_image, 
+    #                                 device=device).cpu().numpy().squeeze()
+    #     print("Norm of goal features:", np.linalg.norm(feat_goal_1))
+
+    #     print(f"Reference {i}:")
+    #     feat_goal_2 = get_goal_features(model=model, 
+    #                                     model_config=model_config, 
+    #                                     image=obs_topomap, 
+    #                                     goal_image=obs_topomap, 
+    #                                     device=device).cpu().numpy().squeeze()
+    #     print("Norm of Reference features:", np.linalg.norm(feat_goal_2))
+    #     print("Differences in norms:", np.linalg.norm(feat_goal_2) - np.linalg.norm(feat_goal_1))
+
+    print("SUNFLARE_PHYSIC")
+    model_goal_image_path = "/workspace/metrics/medias/bunker_mist_office_17nov_sunFlare_physic_rad_10_trial_4_last.png"
+    model_goal_image = PILImage.open(model_goal_image_path)
+
+    with open('/workspace/metrics/medias/bunker_mist_office_17nov_sunFlare_physic_rad_10_trial_4_last_distances.npy', 'rb') as f:
+            dists = np.load(f)
+            print("Distances:", dists)
+
+    for i in range(10):
+        print(f"------------------- Topomap bunker_mist_corridor_sunFlare_physic image index: {i} --------------------")
+
+        obs_img_path = f"/workspace/src/visualnav-transformer/deployment/topomaps/images/bunker_mist_office_17nov_sunFlare_physic/{i}.png"
+        obs_topomap = PILImage.open(obs_img_path)
+
+        print("Comparing observed goal from model and topomap images from start to end:")
+        feat_goal_1 = get_goal_features(model=model, 
+                                    model_config=model_config, 
+                                    image=obs_topomap, 
+                                    goal_image=model_goal_image, 
+                                    device=device).cpu().numpy().squeeze()
+        print("Norm of goal features:", np.linalg.norm(feat_goal_1))
+
+        print(f"Reference {i}:")
+        feat_goal_2 = get_goal_features(model=model, 
+                                        model_config=model_config, 
+                                        image=obs_topomap, 
+                                        goal_image=obs_topomap, 
+                                        device=device).cpu().numpy().squeeze()
+        print("Norm of Reference features:", np.linalg.norm(feat_goal_2))
+        print("Differences in norms:", np.linalg.norm(feat_goal_2) - np.linalg.norm(feat_goal_1))
+
+
+
+
 
 
 
