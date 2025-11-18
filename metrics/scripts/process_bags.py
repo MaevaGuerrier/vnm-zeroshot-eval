@@ -6,23 +6,20 @@ from tqdm import tqdm
 from utils import load_config
 from collections import defaultdict
 import time
-
-# TODO make workers for multiprocess
-
+import argparse
 
 
-# TODO since we are interested in trajectories I am not keeping track of angular velocities
+def extract_trial_number(bag_name):
+    trial = re.search(r"trial_(\d+)", bag_name)
+    trial = int(trial.group(1)) if trial else 1
+    return trial
+
+
 def filter_start_stop(df):
     trimmed_dfs = []
 
     # Group by (robot, environment, augmentation)
     for (robot, env, aug), group in df.groupby(["robot", "environment", "augmentation"], sort=False):
-    
-        # if aug == "reference":
-        #     trimmed_dfs.append(group)
-        #     continue
-
-        # group = group.sort_values("time_model").reset_index(drop=True)
 
         motion_mask = (group["lin_x_model"] != 0.0) | (group["lin_y_model"] != 0.0)
         start_idx = motion_mask.idxmax() if motion_mask.any() else None
@@ -49,8 +46,6 @@ def filter_start_stop(df):
 def process_bag_to_df(bag_path, bag_name, augmentation, topics, output_dir):
     bag = bagreader(bag_path)
 
-    dataframes = {}
-
     for name, topic in topics.items():  
 
         if augmentation == "reference" and name != "odom": # only save odom for reference trajectory
@@ -59,7 +54,7 @@ def process_bag_to_df(bag_path, bag_name, augmentation, topics, output_dir):
             csvfile = bag.message_by_topic(topic)
             df = pd.read_csv(csvfile)        
             Path(output_dir).mkdir(parents=True, exist_ok=True)
-            output_file = f"{output_dir}{bag_name}_{name}.csv"
+            output_file = f"{output_dir}{bag_name}_{name}.csv" #TODO any changes here impacts load_all_data, particularly in topic_key extraction
             df.to_csv(output_file, index=False)
         except Exception as e:
             print(f"Error processing {name}: {e}")
@@ -79,11 +74,6 @@ def ensure_columns(df, keep_cols, fill_value=None):
     return df[keep_cols]
 
 
-# TODO downslample put it as a variable
-
-# TODO filter_by_start_stop
-# TODO if reach goal then becomes stop flag
-# dataframes = filter_by_start_stop(dataframes, topics.get("ready_flag"), topics.get("stop_flag"))
 def load_all_data(base_dir, env_map, config):
     base_dir = Path(base_dir)
     all_data = []
@@ -108,6 +98,8 @@ def load_all_data(base_dir, env_map, config):
             all_target_columns.extend(submap.keys())
         # Remove duplicates while preserving order
         all_target_columns = list(dict.fromkeys(all_target_columns))
+        # TODO make sure metatdata columns are included
+        all_target_columns.extend(["radius"])
 
         for env_dir in robot_dir.iterdir():
             env_name = env_dir.name
@@ -115,67 +107,75 @@ def load_all_data(base_dir, env_map, config):
 
             for aug_dir in env_dir.iterdir():
                 aug_name = aug_dir.name
-                print(f"[INFO] Processing {robot_name} - {env_name} - {aug_name}")
-                dfs = []
-                ref_df = None
+                for trial_dir in aug_dir.iterdir():
+                    trial_nb = trial_dir.name
+                    print(f"[INFO] Processing {robot_name} - {env_name} - {aug_name} - {trial_nb}")
+                    dfs = []
+                    ref_df = None
 
-                for csv_file in aug_dir.glob(f"{robot_name}_{env_name}_{aug_name}_*.csv"):
-                    df = pd.read_csv(csv_file)
-                    topic_key = re.search(rf"{aug_name}_(.+)\.csv", csv_file.name).group(1)
+                    for csv_file in trial_dir.glob(f"{robot_name}_{env_name}_{aug_name}_*.csv"):
+                        df = pd.read_csv(csv_file)
+                        topic = find_topic(csv_file.name, list(config_data_header.keys()))
+                        if not topic:
+                            print(f"[WARN] No topic found in {csv_file.name}, skipping.")
+                            continue
 
-                    if topic_key in config_data_header:
-                        rename_map = config_data_header[topic_key]
+                        rename_map = config_data_header[topic]
                         rename_map = {v: k for k, v in rename_map.items()}
                         df = df.rename(columns=rename_map)
                         df = df[list(rename_map.values())]
 
                         print(df.columns)
-                        
+                            
 
-                    if topic_key == "odom":
-                        odom_df = df.copy()
+                        if topic == "odom":
+                            odom_df = df.copy()
+                            continue
+
+                        #TODO add any other metadata extraction here if needed
+                        df["radius"] = find_config_metadata(csv_file.name, config)
+                    
+                        dfs.append(df)
+
+                    if aug_name == "reference":
+                        ref_df = odom_df.copy()
+                        ref_df["robot"] = robot_name
+                        ref_df["environment"] = env_name
+                        ref_df["env_type"] = env_type
+                        ref_df["augmentation"] = aug_name
+                        # print("REFERENCE COLUMNS:")
+                        # print(ref_df.columns)
+
+                    if not dfs:
                         continue
-                
-                    dfs.append(df)
-
-                if aug_name == "reference":
-                    ref_df = odom_df.copy()
-                    ref_df["robot"] = robot_name
-                    ref_df["environment"] = env_name
-                    ref_df["env_type"] = env_type
-                    ref_df["augmentation"] = aug_name
-                    # print("REFERENCE COLUMNS:")
-                    # print(ref_df.columns)
-
-                if not dfs:
-                    continue
 
 
-                merged_df = odom_df
-                for df in dfs:
-                    merged_df = pd.merge_asof(
-                        merged_df,
-                        df,
-                        on="Time",
-                        direction="nearest",
-                        tolerance=0.2,
-                    )
+                    merged_df = odom_df
+                    for df in dfs:
+                        merged_df = pd.merge_asof(
+                            merged_df,
+                            df,
+                            on="Time",
+                            direction="nearest",
+                            tolerance=0.2,
+                        )
 
-                print(f"AUG NAME: {aug_name}")
-                print(merged_df.columns)
-                print("-------------------------------------------------")
-                ensure_columns(merged_df, all_target_columns)
-                merged_df = merged_df[all_target_columns]
+                    print(f"AUG NAME: {aug_name}")
+                    print(merged_df.columns)
+                    print("-------------------------------------------------")
+                    ensure_columns(merged_df, all_target_columns)
+                    merged_df = merged_df[all_target_columns]
 
-                merged_df["robot"] = robot_name
-                merged_df["environment"] = env_name
-                merged_df["env_type"] = env_type
-                merged_df["augmentation"] = aug_name
+                    merged_df["robot"] = robot_name
+                    merged_df["environment"] = env_name
+                    merged_df["env_type"] = env_type
+                    merged_df["augmentation"] = aug_name
+                    merged_df["trial"] = int(trial_nb)
 
-                # merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
-                all_data.append(merged_df)
-                if ref_df is not None:
-                    all_data.append(ref_df)
+                    # merged_df = merged_df.loc[:, ~merged_df.columns.duplicated()]
+                    all_data.append(merged_df)
+                    if ref_df is not None:
+                        all_data.append(ref_df)
                 
     if not all_data:
         raise ValueError("No data found!")
@@ -183,63 +183,142 @@ def load_all_data(base_dir, env_map, config):
     combined_df = pd.concat(all_data, ignore_index=True)
     return combined_df
 
+def find_topic(name:str, topics:list) -> str:
+    topic = None
+    print(f"Available topics: {topics}")
+    for topic_name in topics:
+        if topic_name in name:
+            topic = topic_name
+            print(f"[INFO] Found topic: {topic} in {name}")
+            break
+    return topic
 
-def main():
+def find_augmentations(bag_name, valid_augs):
+    found = None
+    for aug in valid_augs:
+        if aug in bag_name:
+            found = aug
+            print(f"[INFO] Found augmentation: {aug} in {bag_name}")
+            break
+    return found
+
+def find_env_name(bag_name, valid_envs):
+    found = None
+    for env in valid_envs:
+        if env in bag_name:
+            found = env
+            print(f"[INFO] Found environment: {env} in {bag_name}")
+            break
+    return found
+
+
+# @TODO any additions regarding navigate.py parameters need to be added here
+def find_config_metadata(name:str, config:dict) -> any:
+    radius = None
+    valid_radii = config["radius"]["values"]
+    for rad in valid_radii:
+        # We assume this struct only, any changes regarding file structure @TODO need to be handled here
+        if f"rad_{rad}" in name:
+            radius=rad
+            break
+    if not radius:
+        radius = config["radius"]["default"]
+
+    return radius
+
+
+def main(args):
+
     config = load_config()
-    bag_files = find_bag_files(config["paths"]["bags_dir"]) # ASSUMPTION RUN INSIDE DOCKER THUS /workspace/metrics/bags is always present
-    # augmentations = config["augmentations"]
     env_map = {env: env_type for env_type, env_list in config["environments"].items() for env in env_list}
     environments = list(env_map.keys())
-
-    # import ipdb; ipdb.set_trace()
-    # for bag_file in bag_files:
-    #     bag_name = re.sub(rf'^{config["paths"]["bags_dir"]}|\.bag$', '', bag_file)
         
 
-    #     # bag_name = bag_file.stem  ONLY VALID IF GO BACK TO PATH LOGIC# e.g., bunker_mist_office_v1_blur
-    #     #print(f"[INFO] Found bag file: {bag_name}")
+    if args.proc == 'bag2df':
+        print("Processing bag files to dataframes...")
+        # import ipdb; ipdb.set_trace()
+        bag_files = find_bag_files(config["paths"]["bags_dir"]) # ASSUMPTION RUN INSIDE DOCKER THUS /workspace/metrics/bags is always present
+        for bag_file in bag_files:
+            bag_name = re.sub(rf'^{config["paths"]["bags_dir"]}|\.bag$', '', bag_file)
 
-    #     # --- Identify robot (first token before '_') ---
-    #     curr_robot = bag_name.split("_")[0]
-    #     if curr_robot not in config["robots"]:
-    #         print(f"[WARN] Unknown robot '{curr_robot}' in {bag_name}, skipping.")
-    #         continue
-    #     robot = curr_robot
+            # bag_name = bag_file.stem  ONLY VALID IF GO BACK TO PATH LOGIC# e.g., bunker_mist_office_v1_blur
+            #print(f"[INFO] Found bag file: {bag_name}")
 
-    #     # --- Identify environment (based on config names, not split position) ---
-    #     env = next((env for env in environments if env in bag_name), None)
-    #     if not env:
-    #         #print(f"[WARN] No known environment found in {bag_name}")
-    #         continue
+            curr_robot = bag_name.split("_")[0]
+            if curr_robot not in config["robots"]:
+                print(f"[WARN] Unknown robot '{curr_robot}' in {bag_name}, skipping.")
+                continue
+            robot = curr_robot
 
-    #     aug = re.search(rf"{env}_(.+)", bag_name).group(1)
-    #     # print(f"[INFO] Processing {bag_name}: robot={robot}, env={env}, aug={aug}")
-    #     if aug not in config["augmentations"]:
-    #         print(f"[WARN] No known augmentation {aug} found in {bag_name}, skipping.")
-    #         continue
+            env = find_env_name(bag_name, environments)
+            if not env:
+                print(f"[WARN] No known environment found in {bag_name}")
+                continue
+
+            aug = find_augmentations(bag_name, config["augmentations"])
+            if not aug:
+                print(f"[WARN] No known augmentation found in {bag_name}, skipping.")
+                continue
+            
+
+            process_bag_to_df(
+                bag_path=bag_file,
+                bag_name=bag_name,
+                augmentation=aug,
+                topics=config["robots"][robot]["topics"],
+                output_dir=f"{config['paths']['dataframes_dir']}{robot}/{env}/{aug}/{extract_trial_number(bag_name)}/",
+            )       
         
-
-    #     process_bag_to_df(
-    #         bag_path=bag_file,
-    #         bag_name=bag_name,
-    #         augmentation=aug,
-    #         topics=config["robots"][robot]["topics"],
-    #         output_dir=f"{config['paths']['dataframes_dir']}{robot}/{env}/{aug}/",
-    #     )       
+    elif args.proc == 'unify_dfs':
+        print("Unifying existing dataframes...")
         
+        df = load_all_data(config["paths"]["dataframes_dir"], env_map, config)
+        print(f'augs {df["augmentation"].unique()}')
+        print(f'robots {df["robot"].unique()}')
+        print(f'radii {df["radius"].unique()}')
+        print(f'environments {df["environment"].unique()}')
+        # print(df.head())
+        filtered_df = filter_start_stop(df)
+        # print(filtered_df.head())
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        filtered_df['lin_x_model'].fillna(0.0, inplace=True)
+        filtered_df['lin_y_model'].fillna(0.0, inplace=True)
+        filtered_df['goal'].fillna(False, inplace=True)
+        print(f'augs after filtering {filtered_df["augmentation"].unique()}')
+        # filtered_df.to_csv(f"{config['paths']['dataframes_dir']}all_data_{timestamp}.csv", index=False)
 
-    df = load_all_data(config["paths"]["dataframes_dir"], env_map, config)
-    print(df["augmentation"].unique())
-    # print(df.head())
-    filtered_df = filter_start_stop(df)
-    # print(filtered_df.head())
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
-    filtered_df['lin_x_model'].fillna(0.0, inplace=True)
-    filtered_df['lin_y_model'].fillna(0.0, inplace=True)
-    filtered_df['goal'].fillna(False, inplace=True)
-    print(filtered_df["augmentation"].unique())
-    # filtered_df.to_csv(f"{config['paths']['dataframes_dir']}all_data_{timestamp}.csv", index=False)
+    else:
+        print("No valid operation specified. Use --proc with 'bag2df' or 'unify_dfs'.")
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(description="Process bag files to dataframes or unify existing dataframes.")
+    group = parser.add_mutually_exclusive_group(required=True)
+
+    # Option 1
+    group.add_argument(
+        "--bag2df",
+        type=str,
+        help="Process bag files to dataframes, based on the provided directory in experiments.yaml"
+    )
+
+    # Option 2
+    group.add_argument(
+        "--unify_dfs",
+        type=str,
+        help="Unifie all dataframes into a single dataframe (Assuming all dataframes are already processed)"
+    )
+
+    return parser
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Process bag files to dataframes or unify existing dataframes.")
+    parser.add_argument('--proc',
+                        default='bag2df',
+                        nargs='?', # ? = zero or one argument
+                        choices=['bag2df', 'unify_dfs'],
+                        help='Process bag files to dataframes (bag2df) or unify (unify_dfs) existing dataframes (default: %(default)s)')
+
+    args = parser.parse_args()
+    main(args)
