@@ -172,7 +172,7 @@ def get_bag_img_traj_data(bag, img_topic, odom_topic, process_images_fn, process
 
 
 
-def associate_topomap_node_with_odom(bag_img_data, bag_traj_data, output_dir):
+def associate_topomap_node_with_odom(bag_img_data, bag_traj_data):
     """
     Associates each image node index with odometry (x, y) and saves results.
     Returns a pandas DataFrame with columns:
@@ -194,14 +194,15 @@ def associate_topomap_node_with_odom(bag_img_data, bag_traj_data, output_dir):
 # TODO later on make checks if already processed
 if __name__ == "__main__":
 
-    reference_bag_path = "/workspace/metrics/bags"
+    bag_dir = "/workspace/metrics/bags"
     output_dir = "/workspace/metrics/dataframes/closest_node_analysis"
 
     reference_header = 'reference'
 
     config = load_config()
     root_path = config["paths"]["dataframes_dir"]
-    df = pd.read_csv(f"{root_path}all_data_20251014-180242.csv")
+    csv_name = "all_data_20251118-231029.csv"
+    df = pd.read_csv(f"{root_path}{csv_name}")
 
 
     for robot in df["robot"].unique():
@@ -209,9 +210,9 @@ if __name__ == "__main__":
         for env in robot_df["environment"].unique():
             env_df = robot_df[robot_df["environment"] == env]
             reference_df = env_df[env_df["augmentation"] == reference_header]
-            bag_path = os.path.join(reference_bag_path, f"{robot}_{env}_reference.bag")
-            print(f"Processing bag: {bag_path}")
-            bag = rosbag.Bag(bag_path, "r")
+            ref_bag_path = os.path.join(bag_dir, f"{robot}_{env}_reference.bag")
+            print(f"Processing bag: {ref_bag_path}")
+            bag = rosbag.Bag(ref_bag_path, "r")
 
             img_process, odom_process = get_process_func(
                 img_func_name=config["robots"][robot]["process_bag_metrics"]["img_process_func"],
@@ -228,11 +229,11 @@ if __name__ == "__main__":
 
             node_df = associate_topomap_node_with_odom(
                 bag_img_data=bag_img_data,
-                bag_traj_data=bag_traj_data,
-                output_dir=output_dir
+                bag_traj_data=bag_traj_data
             )
 
             save_path = os.path.join(output_dir, f"{robot}_{env}_nodes_reference.csv")
+            os.makedirs(output_dir, exist_ok=True)
             node_df.to_csv(save_path, index=False)
 
 

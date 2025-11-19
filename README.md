@@ -323,11 +323,7 @@ cd habitat-sim
 
 pip install -r requirements.txt 
 
-# CONTINUE BELOW
-
-<!-- pip install setuptools==59.5.0 -->
-
-pip install --upgrade setuptools # means b4 pip install setuptools
+pip install setuptools 
 
 python setup.py --bullet --with-cuda build_ext --parallel 8 install --cmake-args="-DUSE_SYSTEM_ASSIMP=ON"
 
@@ -340,11 +336,11 @@ git lfs install
 
 mkdir ../habitat_scenes
 
-python -m habitat_sim.utils.datasets_download --uids habitat_test_scenes --data-path ../habitat_scenes
+python -m habitat_sim.utils.datasets_download --uids habitat_test_scenes --data-path data/
 
-python -m habitat_sim.utils.datasets_download --uids habitat_example_objects --data-path ../habitat_scenes
+python -m habitat_sim.utils.datasets_download --uids habitat_example_objects --data-path data/
 
-python examples/viewer.py --scene ../habitat_scenes/scene_datasets/habitat-test-scenes/skokloster-castle.glb
+python examples/viewer.py --scene data/scene_datasets/habitat-test-scenes/skokloster-castle.glb
 
 
 **Troubleshooting** 
@@ -379,6 +375,78 @@ Environment creation successful
 [10:51:01:376042]:[Error]:[Metadata] AOAttributesManager.cpp(199)::preRegisterObjectFinalize : ArticulatedObjectAttributes template named `data/robots/hab_fetch/robots/hab_suction.urdf` specifies the URDF Filepath `data/robots/hab_fetch/robots/hab_suction.urdf` full path ``, but this file cannot be found, so registration is aborted.
 [1]    55491 segmentation fault (core dumped)  python examples/example.py
 
-
+https://github.com/facebookresearch/habitat-lab/issues/896
 
 python -m habitat_sim.utils.datasets_download --uids rearrange_task_assets --data-path data/
+
+
+Now example should work python examples/example.py 
+You should see:
+```
+Environment creation successful
+Agent acting inside environment.
+Episode finished after 230 steps.
+```
+
+**Interactive play**
+
+
+pip install pybullet==3.0.4
+pip install pygame==2.0.1
+
+
+**issues with interactive_play**
+
+
+Bad inertia tensor properties, setting inertia to zero for link: l_gripper_finger_link
+X Error of failed request:  BadAccess (attempt to access private resource denied)
+  Major opcode of failed request:  152 (GLX)
+  Minor opcode of failed request:  5 (X_GLXMakeCurrent)
+  Serial number of failed request:  87
+  Current serial number in output stream:  87
+
+https://github.com/facebookresearch/habitat-lab/issues/2142#issuecomment-2743835356  
+
+Comment pygame.init() on line 476 and paste it in line 801 in file examples/interactive_play.py
+
+
+
+
+# TODOs
+
+
+**scene addition**
+
+@TODO check it works
+put scene .glb and .navmesh files under the data_habitat/versioned_data/habitat_test_scenes_1.0 directory.
+
+
+**vel control**
+@TODO 
+https://github.com/facebookresearch/habitat-lab/blob/380ac0a7d8c4ead1532f109b15d329473212eae9/habitat/tasks/rearrange/actions/actions.py#L227
+
+
+
+
+???
+
+pip install --upgrade habitat-sim==0.3.7
+
+
+
+@TODO 
+
+I did for now DEFAULT_PHYSICS_CONFIG_PATH = "/home/mae/Documents/GIT/Research/SafeGNM/sim/habitat/habitat-lab/data/default.physics_config.json"
+
+In habitat-lab/habitat-lab/habitat/datasets/utils.py
+
+
+@TODOS 
+
+python collect_manual.py --habitat-config ../conf_habitat/config_habitat.yaml --user-config ../conf_habitat/config.yaml --output trajectories/manual
+
+
+2]:[Error]:[Scene] SemanticScene.cpp(139)::loadSemanticSceneDescriptor : SSD Load Failure! File with SemanticAttributes-provided name `../habitat-sim/data/versioned_data/annawan/Annawan.scn` exists but failed to load.
+[15:39:40:284498]:[Warning]:[Sim] Simulator.cpp(595)::instanceStageForSceneAttributes : The active scene does not contain semantic annotations : activeSemanticSceneID_ = 0
+[15:39:40:348216]:[Error]:[Nav] PathFinder.cpp(895)::build : Could not build Detour navmesh
+[15:39:40:348261]:[Error]:[Sim] Simulator.cpp(838)::recomputeNavMesh : Failed to build navmesh

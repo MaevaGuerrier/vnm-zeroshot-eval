@@ -4,52 +4,6 @@ from utils import load_config
 import pandas as pd
 import numpy as np
 
-
-# def compute_node_errors(all_data, reference_nodes, normalize_trajectory_length=True, n_samples=100):
-#     """
-#     all_data: dataframe containing pose_x, pose_y, closest_node, robot, environment, augmentation
-#     reference_nodes: dictionary mapping (robot, env) -> reference dataframe with node_idx, node_x_odom, node_y_odom
-#     normalize_trajectory_length: if True, resample all trajectories to same number of points
-#     n_samples: number of points to resample to (if normalize_trajectory_length=True)
-#     """
-#     results = []
-
-#     for (robot, env, aug), df_group in all_data.groupby(["robot", "environment", "augmentation"]):
-#         ref_key = (robot, env)
-#         if ref_key not in reference_nodes:
-#             print(f"No reference nodes for ({robot}, {env})")
-#             continue
-
-#         ref_df = reference_nodes[ref_key]
-#         ref_positions = ref_df[["node_x_odom", "node_y_odom"]].to_numpy()
-        
-#         # This is done so that all trajectories have the same number of points for fair distance comparison
-#         # e.g if actual has 150 points and reference has 80 points, the closest node matching will be biased, thus we resample both to n_samples points
-#         if normalize_trajectory_length:
-#             df_group = resample_trajectory(df_group, n_samples)
-        
-#         poses = df_group[["pose_x", "pose_y"]].to_numpy()
-
-#         # Compute pairwise distances
-#         distances = np.linalg.norm(poses[:, None, :] - ref_positions[None, :, :], axis=2)
-
-#         closest_ref_idx = np.argmin(distances, axis=1)
-#         true_nodes = ref_df.iloc[closest_ref_idx]["node_idx"].values
-
-#         df_group = df_group.copy()
-#         df_group["true_node"] = true_nodes
-#         df_group["node_error"] = df_group["closest_node"] - df_group["true_node"]
-        
-#         df_group["abs_node_error"] = np.abs(df_group["node_error"])
-#         # We create a normalize timeline from 0 (start) to 1 (end) for each trajectory env, robot variation 
-#         # This allow to see aanswer questions "What was the error at 50% completion across all robot/environment variations?""
-#         df_group["trajectory_progress"] = np.linspace(0, 1, len(df_group))  # 0 to 1 progress
-
-#         results.append(df_group)
-
-#     return pd.concat(results, ignore_index=True)
-
-
 def compute_node_errors(all_data, reference_nodes):
     """
     all_data: dataframe containing pose_x, pose_y, closest_node, robot, environment, augmentation
@@ -87,69 +41,6 @@ def compute_node_errors(all_data, reference_nodes):
     return pd.concat(results, ignore_index=True)
 
 
-
-# def resample_trajectory(df, n_samples):
-#     """
-#     Resample trajectory to fixed number of points using linear interpolation.
-#     Preserves temporal/spatial ordering.
-#     """
-#     original_length = len(df)
-    
-#     if original_length == n_samples:
-#         return df
-    
-#     # Create interpolation indices
-#     original_indices = np.arange(original_length)
-#     new_indices = np.linspace(0, original_length - 1, n_samples)
-    
-#     # Interpolate numeric columns
-#     numeric_cols = df.select_dtypes(include=[np.number]).columns
-#     resampled_data = {}
-    
-#     for col in numeric_cols:
-#         resampled_data[col] = np.interp(new_indices, original_indices, df[col].values)
-    
-#     # Handle non-numeric columns (take nearest neighbor)
-#     for col in df.columns:
-#         if col not in numeric_cols:
-#             nearest_idx = np.round(new_indices).astype(int)
-#             resampled_data[col] = df[col].iloc[nearest_idx].values
-    
-#     return pd.DataFrame(resampled_data)
-
-
-# def barplot_node_errors(df, reference_nodes, title, save_path, show=True):
-#     results = compute_node_errors(df, reference_nodes)
-#     error_summary = results.groupby(
-#         ['robot', 'environment', 'augmentation']
-#     )['abs_node_error'].agg(['mean', 'std']).reset_index()
-
-#     # Create bar plot
-#     fig, axes = plt.subplots(
-#         len(results['augmentation'].unique()), 
-#         1, 
-#         figsize=(12, 4 * len(results['augmentation'].unique()))
-#     )
-
-#     for i, aug in enumerate(results['augmentation'].unique()):
-#         data = error_summary[error_summary['augmentation'] == aug]
-        
-#         # Pivot for grouped bar plot
-#         pivot_data = data.pivot(
-#             index='environment', 
-#             columns='robot', 
-#             values='mean'
-#         )
-        
-#         ax = axes[i] if len(results['augmentation'].unique()) > 1 else axes
-#         pivot_data.plot(kind='bar', ax=ax, rot=45)
-#         ax.set_title(f'Augmentation: {aug}')
-#         ax.set_ylabel('Mean Absolute Node Error')
-#         ax.legend(title='Robot')
-
-#     plt.tight_layout()
-#     if show:
-#         plt.show()
 
 
 def plot_trajectory_node_comparison(reference_df, actual_df, title="Trajectory Comparison", show=True):
@@ -254,8 +145,6 @@ def plot_single_node_comparaison(df, reference_df, robot="limo", environment="cl
     fig1, ax1 = plot_trajectory_node_comparison(reference_df, actual_df, 
                                            "Reference vs Actual Trajectory")    
     plt.show()
-
-
 
 def plot_trajectory_with_errors(reference_df, actual_df, node_errors=None, title="Trajectory with Node Errors", show=True):
     """
@@ -379,34 +268,38 @@ def plot_trajectory_with_errors(reference_df, actual_df, node_errors=None, title
 if __name__ == "__main__":
 
     reference_header = 'reference'
+    csv_name = "all_data_20251118-231029.csv"
 
     config = load_config()
     root_path = config["paths"]["dataframes_dir"]
-    df = pd.read_csv(f"{root_path}all_data_20251014-180242.csv") #Index(['pose_x', 'pose_y', 'goal', 'robot', 'environment', 'env_type','augmentation'],
-    limo_clearpath_playpen_nodes_reference_df = pd.read_csv(f"{root_path}closest_node_analysis/limo_clearpath_playpen_nodes_reference.csv") # node_idx, node_x_odom, node_y_odom
+    df = pd.read_csv(f"{root_path}{csv_name}") 
+
+    #TODO need to be automated
+
+    bunker_mist_office_17nov_nodes_reference_df = pd.read_csv(f"{root_path}closest_node_analysis/bunker_mist_office_17nov_nodes_reference.csv") 
 
     reference_nodes = {
-    ("limo", "clearpath_playpen"): limo_clearpath_playpen_nodes_reference_df,
+    ("bunker", "mist_office_17nov"): bunker_mist_office_17nov_nodes_reference_df,
         # add more if needed
     }
 
 
 
     all_data_with_errors = compute_node_errors(df, reference_nodes)
-    print(all_data_with_errors.head())
+    print(all_data_with_errors.head(50))
 
 
 
     # #SINGLE PLOT EXAMPLES
-    actual_df = df[(df["robot"] == "bunker") & (df["environment"] == "mist_corridor") & (df["augmentation"] == "no_augmentation")]
-    reference_df = limo_clearpath_playpen_nodes_reference_df
-    plot_single_node_comparaison(df=actual_df, reference_df=reference_df)
+    # actual_df = df[(df["robot"] == "bunker") & (df["environment"] == "mist_corridor") & (df["augmentation"] == "no_augmentation")]
+    # reference_df = limo_clearpath_playpen_nodes_reference_df
+    # plot_single_node_comparaison(df=actual_df, reference_df=reference_df)
     
-    # #Plot 2: With error visualization
-    node_errors = compute_node_errors(df, reference_nodes)
-    node_errors = node_errors[(node_errors["robot"] == "bunker") & (node_errors["environment"] == "mist_corridor") & (node_errors["augmentation"] == "no_augmentation")]["node_error"].values
-    fig2, ax2 = plot_trajectory_with_errors(reference_df, actual_df, node_errors,
-                                           "Trajectory with Node Prediction Errors")
+    # # #Plot 2: With error visualization
+    # node_errors = compute_node_errors(df, reference_nodes)
+    # node_errors = node_errors[(node_errors["robot"] == "bunker") & (node_errors["environment"] == "mist_corridor") & (node_errors["augmentation"] == "no_augmentation")]["node_error"].values
+    # fig2, ax2 = plot_trajectory_with_errors(reference_df, actual_df, node_errors,
+    #                                        "Trajectory with Node Prediction Errors")
     
     
 

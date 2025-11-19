@@ -63,6 +63,7 @@ environments:
     - clearpath_playpen
   indoor:
     - mist_corridor
+    - mist_office_17nov
     - hallway
   outdoor:
     - parking_lot
@@ -84,6 +85,13 @@ augmentations:
   - rain_torrential
   - reference # reference trajectory
   - no_augmentation 
+
+
+radius:
+  default: 2
+  values:
+    - 10
+
 
 paths:
   bags_dir: "/workspace/metrics/bags/"

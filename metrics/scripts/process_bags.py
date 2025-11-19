@@ -128,7 +128,7 @@ def load_all_data(base_dir, env_map, config):
                         print(df.columns)
                             
 
-                        if topic == "odom":
+                        if topic == "odom": # seperating for merge_asof 
                             odom_df = df.copy()
                             continue
 
@@ -185,7 +185,7 @@ def load_all_data(base_dir, env_map, config):
 
 def find_topic(name:str, topics:list) -> str:
     topic = None
-    print(f"Available topics: {topics}")
+    # print(f"Available topics: {topics}")
     for topic_name in topics:
         if topic_name in name:
             topic = topic_name
@@ -273,18 +273,18 @@ def main(args):
         print("Unifying existing dataframes...")
         
         df = load_all_data(config["paths"]["dataframes_dir"], env_map, config)
-        print(f'augs {df["augmentation"].unique()}')
-        print(f'robots {df["robot"].unique()}')
-        print(f'radii {df["radius"].unique()}')
-        print(f'environments {df["environment"].unique()}')
         # print(df.head())
         filtered_df = filter_start_stop(df)
         # print(filtered_df.head())
         timestamp = time.strftime("%Y%m%d-%H%M%S")
         filtered_df['lin_x_model'].fillna(0.0, inplace=True)
         filtered_df['lin_y_model'].fillna(0.0, inplace=True)
+        filtered_df['radius'].fillna(config["radius"]["default"], inplace=True)
         filtered_df['goal'].fillna(False, inplace=True)
-        print(f'augs after filtering {filtered_df["augmentation"].unique()}')
+        # print(f'augs {filtered_df["augmentation"].unique()}')
+        # print(f'robots {filtered_df["robot"].unique()}')
+        # print(f'radii {filtered_df["radius"].unique()}')
+        # print(f'environments {filtered_df["environment"].unique()}')
         # filtered_df.to_csv(f"{config['paths']['dataframes_dir']}all_data_{timestamp}.csv", index=False)
 
     else:

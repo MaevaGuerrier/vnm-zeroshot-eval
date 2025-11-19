@@ -4,11 +4,12 @@ lib64
 pyvenv.cfg
 ttx.1
 *.h
-
+*.npy
 
 safeGNM/
 mist_sim_ws/*
 datasets/*
+sim/*
 
 crossformer/assets/chunk/
 ros/
