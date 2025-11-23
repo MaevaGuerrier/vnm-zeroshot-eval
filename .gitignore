@@ -7,7 +7,6 @@ datasets/*
 crossformer/assets/chunk/
 
 *.bag
-src/*
 
 # Crossformer asssets 
 
