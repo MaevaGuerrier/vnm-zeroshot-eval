@@ -19,4 +19,4 @@ pip3 install /workspace/src/NaiviBridger/train/ --target $target
 
 # pip3 install vit-pytorch --target $target
 
-# pip3 install diffusers --target $target
+# pip3 install diffusers==0.11.1 --target $target
