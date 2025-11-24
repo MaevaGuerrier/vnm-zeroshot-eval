@@ -45,25 +45,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 
-RUN pip install --no-cache-dir --index-url https://pypi.org/simple matplotlib==3.5.1 \
-                pyyaml \
-                einops \
-                vit-pytorch \
-  		        rospkg \
-  		        defusedxml \
-                protobuf==3.20 \
-  		        huggingface_hub==0.23.5 \
-		        efficientnet_pytorch \
-		        warmup_scheduler \
-		        diffusers==0.11.1 \
-                numpy==1.24.4 \
-                prettytable \
-                onnx \
-                onnxruntime-gpu==1.19 \
-                pycuda \
-                bagpy
+RUN pip install --no-cache-dir --index-url https://pypi.org/simple \
+    matplotlib==3.5.1 \
+    pyyaml \
+    einops \
+    vit-pytorch \
+    rospkg \
+    defusedxml \
+    protobuf==3.20 \
+    huggingface_hub==0.23.5 \
+    efficientnet_pytorch \
+    warmup_scheduler \
+    diffusers==0.11.1 \
+    numpy==1.24.4 \
+    prettytable \
+    onnx \
+    pycuda \
+    bagpy \
+    coloredlogs \
+    flatbuffers \
+    sympy && \
+    wget https://nvidia.box.com/shared/static/mvdcltm9ewdy2d5nurkiqorofz1s53ww.whl -O onnxruntime_gpu-1.15.1-cp38-cp38-linux_aarch64.whl && \
+    pip install --no-deps onnxruntime_gpu-1.15.1-cp38-cp38-linux_aarch64.whl && \
+    rm onnxruntime_gpu-1.15.1-cp38-cp38-linux_aarch64.whl
 
-
+    
 ARG CACHE_BUST=1
 COPY ./setup.sh /tmp/setup.sh
 
