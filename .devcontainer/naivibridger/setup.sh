@@ -1,7 +1,7 @@
 #!/bin/bash
 # source ~/.bashrc
 # source 
-
+target="/workspace/.packages_naivibridger"
 source /opt/ros/noetic/setup.bash
-export PYTHONPATH=/workspace/.packages_naivibridger:$PYTHONPATH
+export PYTHONPATH=${target}:$PYTHONPATH
 exec "$@"

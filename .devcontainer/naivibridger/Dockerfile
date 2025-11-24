@@ -68,7 +68,7 @@ RUN pip install \
     typing-extensions==4.7.1 \
     "filelock<3.13" \
     matplotlib==3.5.1 \
-    torch==2.4.0 torchvision --extra-index-url https://download.pytorch.org/whl/cu124 \
+    torch==2.4.1 torchvision --extra-index-url https://download.pytorch.org/whl/cu124 \
     pyyaml \
     einops \
     vit-pytorch \
@@ -84,7 +84,8 @@ RUN pip install \
     bagpy \
     networkx==3.1 \
     prettytable \
-    opencv-python
+    opencv-python \
+    torch-ema
 
 # ==
 # Remove cache and extra files
