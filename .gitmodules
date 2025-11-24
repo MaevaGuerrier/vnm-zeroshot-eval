@@ -5,4 +5,4 @@
 [submodule "src/NaiviBridger"]
 	path = src/NaiviBridger
 	url = git@github.com:MaevaGuerrier/NaiviBridger.git
-	branch = main
+	branch = bunker/naivibridger
