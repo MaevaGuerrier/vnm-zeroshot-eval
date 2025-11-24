@@ -58,18 +58,20 @@ RUN pip install --no-cache-dir --index-url https://pypi.org/simple \
     warmup_scheduler \
     diffusers==0.11.1 \
     numpy==1.24.4 \
+    scipy==1.10.1 \
     prettytable \
     onnx \
     pycuda \
     bagpy \
     coloredlogs \
     flatbuffers \
+    wandb \
     sympy && \
     wget https://nvidia.box.com/shared/static/mvdcltm9ewdy2d5nurkiqorofz1s53ww.whl -O onnxruntime_gpu-1.15.1-cp38-cp38-linux_aarch64.whl && \
     pip install --no-deps onnxruntime_gpu-1.15.1-cp38-cp38-linux_aarch64.whl && \
     rm onnxruntime_gpu-1.15.1-cp38-cp38-linux_aarch64.whl
 
-    
+
 ARG CACHE_BUST=1
 COPY ./setup.sh /tmp/setup.sh
 

@@ -14,7 +14,6 @@ sim/*
 crossformer/assets/chunk/
 ros/
 *.bag
-src/*
 *.csv
 metrics/dataframes/
 *.png
