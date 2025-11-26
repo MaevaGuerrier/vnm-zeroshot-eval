@@ -1,3 +1,8 @@
+# TODOs
+
+- Unifies the publishers, we have repeated code in the navigation files
+- Docs
+
 # INIT
 
 **setup submodules**
