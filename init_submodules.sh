@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+git pull
+
 # Make sure we have submodules initialized
 git submodule init 
 
