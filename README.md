@@ -455,3 +455,77 @@ python collect_manual.py --habitat-config ../conf_habitat/config_habitat.yaml --
 [15:39:40:284498]:[Warning]:[Sim] Simulator.cpp(595)::instanceStageForSceneAttributes : The active scene does not contain semantic annotations : activeSemanticSceneID_ = 0
 [15:39:40:348216]:[Error]:[Nav] PathFinder.cpp(895)::build : Could not build Detour navmesh
 [15:39:40:348261]:[Error]:[Sim] Simulator.cpp(838)::recomputeNavMesh : Failed to build navmesh
+
+
+# Record bags (topomap, deployment)
+
+
+
+**record_topomap.launch**
+```
+<?xml version="1.0"?>
+<launch>
+
+    <!-- Mandatory arguments (no default values) -->
+      <arg name="env"/>
+
+
+      <arg name="robot" default="bunker" />
+      <arg name="algo"  default="reference" />
+      <arg name="aug"   default="reference" />
+      <arg name="trial" default="1" />
+
+
+    <!-- Build bag name -->
+    <arg name="bag_name" value="/workspace/$(arg algo)_$(arg robot)_$(arg env)_$(arg aug)_trial_$(arg trial).bag" />
+
+    <!-- Record rosbag -->
+    <node pkg="rosbag" type="record" name="rosbag_record"
+          args="record -O $(arg bag_name)
+                /lvi_sam/lidar/mapping/odometry
+                /tf
+                /cmd_vel
+                /usb_cam/camera_info
+                /usb_cam/image_raw
+                /oak/rgb/camera_info
+                /oak/rgb/image_raw" />
+</launch>
+
+```
+
+**record_bag.launch**
+
+```
+<?xml version="1.0"?>
+<launch>
+
+    <!-- Mandatory arguments (no default values) -->
+    <arg name="algo" />
+    <arg name="robot" />
+    <arg name="env" />
+    <arg name="aug" />
+    <arg name="trial" />
+
+    <!-- Build bag name -->
+    <arg name="bag_name" value="/workspace/$(arg algo)_$(arg robot)_$(arg env)_$(arg aug)_trial_$(arg trial).bag" />
+
+    <!-- Record rosbag -->
+    <node pkg="rosbag" type="record" name="rosbag_record"
+          args="record -O $(arg bag_name)
+                /lvi_sam/lidar/mapping/odometry
+                /tf
+                /topoplan/reached_goal
+                /distances
+                /closest_node
+                /cmd_vel
+                /usb_cam/camera_info
+                /usb_cam/image_raw
+                /oak/rgb/camera_info
+                /oak/rgb/image_raw
+                /inference_time" />
+</launch>
+
+```
+
+
+e.g., ```roslaunch record_bag.launch algo:=vint robot:=bunker env:=mist_office_sharp aug:=no_aug trial:=1```
