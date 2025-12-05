@@ -493,8 +493,6 @@ python collect_manual.py --habitat-config ../conf_habitat/config_habitat.yaml --
 
 ```
 
-**record_bag.launch**
-
 ```
 <?xml version="1.0"?>
 <launch>
@@ -513,15 +511,16 @@ python collect_manual.py --habitat-config ../conf_habitat/config_habitat.yaml --
     <node pkg="rosbag" type="record" name="rosbag_record"
           args="record -O $(arg bag_name)
                 /lvi_sam/lidar/mapping/odometry
-                /tf
                 /topoplan/reached_goal
                 /distances
                 /closest_node
                 /cmd_vel
                 /usb_cam/camera_info
-                /usb_cam/image_raw
+                /usb_cam/image_raw/compressed
                 /oak/rgb/camera_info
-                /oak/rgb/image_raw
+                /oak/rgb/image_raw/compressed
+                /waypoint
+                /diagnostics
                 /inference_time" />
 </launch>
 

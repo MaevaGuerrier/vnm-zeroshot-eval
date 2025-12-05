@@ -83,6 +83,7 @@ function start_image()
                 -e XAUTHORITY=${XAUTH} \
                 --runtime nvidia --gpus all \
                 -v ${PWD}:/workspace \
+                -v /usr/bin/tegrastats:/usr/bin/tegrastats:ro \
                 -w=/workspace \
                 -e LIBGL_ALWAYS_SOFTWARE="1"\
                 -e DISPLAY=${DISPLAY} \
