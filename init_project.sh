@@ -7,8 +7,7 @@ target_dir=/workspace/.packages_crossformer
 # install visualnav_transformer
 pip install src/visualnav-transformer/train/ --target=$target_dir
 pip install crossformer/ --target=$target_dir
-pip install robo-gym/ --target=$target_dir 
-pip install "scipy==1.12"
+
 
 # build sim_ws
 #cd sim_ws/

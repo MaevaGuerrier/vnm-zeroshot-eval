@@ -2,7 +2,7 @@
 # source ~/.bashrc
 # source 
 export PYTHONPATH=/workspace/.packages_crossformer:$PYTHONPATH
-# source /opt/ros/humble/setup.bash
+source /opt/ros/humble/setup.bash
 # source /workspace/ros2_ws/install/setup.bash
 # export RMW_IMPLEMENTATION=rmw_zenoh_cpp
 # export ZENOH_ROUTER_CHECK_ATTEMPTS=-1
