@@ -1,5 +1,5 @@
 #!/bin/bash
-target_dir=/workspace/.packages_crossformer
+export target_dir=/workspace/.packages_crossformer
 
 # install diffusion_policy
 #pip install diffusion_policy/ --target=$target_dir
