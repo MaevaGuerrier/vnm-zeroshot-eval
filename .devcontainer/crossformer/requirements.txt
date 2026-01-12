@@ -3,8 +3,7 @@ ml_dtypes==0.2.0
 numpy==1.24.3
 chex==0.1.85
 optax==0.1.5
-jax==0.4.20
-jaxlib==0.4.20
+jax[cuda12_pip]==0.4.20
 distrax==0.1.5
 ml_collections>=0.1.0
 setuptools>=65,<68
