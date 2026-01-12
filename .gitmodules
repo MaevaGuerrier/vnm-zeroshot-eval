@@ -1,16 +1,4 @@
-[submodule "robo-gym"]
-	path = robo-gym
-	url = git@github.com:MaevaGuerrier/robo-gym.git
-	branch = main
-[submodule "ros2_ws/src/robo-gym-robot-servers"]
-	path = ros2_ws/src/robo-gym-robot-servers
-	url = git@github.com:MaevaGuerrier/robo-gym-robot-servers.git
-	branch = ros2
 [submodule "crossformer"]
 	path = crossformer
 	url = git@github.com:MaevaGuerrier/crossformer.git
 	branch = main
-[submodule "src/visualnav-transformer"]
-	path = src/visualnav-transformer
-	url = git@github.com:MaevaGuerrier/visualnav-transformer
-	branch = crossformer
