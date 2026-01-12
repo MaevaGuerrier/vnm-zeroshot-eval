@@ -5,3 +5,4 @@
 [submodule "src/visualnav-transformer"]
 	path = src/visualnav-transformer
 	url = git@github.com:MaevaGuerrier/visualnav-transformer.git
+	branch = crossformer
