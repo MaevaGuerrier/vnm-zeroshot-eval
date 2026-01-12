@@ -5,7 +5,7 @@ export target_dir=/workspace/.packages_crossformer
 #pip install diffusion_policy/ --target=$target_dir
 
 # install visualnav_transformer
-pip install src/visualnav-transformer/train/ --target=$target_dir
+# pip install src/visualnav-transformer/train/ --target=$target_dir
 pip install crossformer/ --target=$target_dir
 
 

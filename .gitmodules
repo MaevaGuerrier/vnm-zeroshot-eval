@@ -2,3 +2,6 @@
 	path = crossformer
 	url = git@github.com:MaevaGuerrier/crossformer.git
 	branch = main
+[submodule "src/visualnav-transformer"]
+	path = src/visualnav-transformer
+	url = git@github.com:MaevaGuerrier/visualnav-transformer.git
