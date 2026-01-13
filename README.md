@@ -265,3 +265,11 @@ timm
 tqdm
 trimesh
 ```
+
+
+# JAX gpu verification 
+
+>>> from jax.lib import xla_bridge
+>>> print(xla_bridge.get_backend().platform)
+<stdin>:1: DeprecationWarning: jax.lib.xla_bridge.get_backend is deprecated; use jax.extend.backend.get_backend.
+gpu

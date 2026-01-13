@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/l4t-base:r36.2.0 
+FROM dustynv/crossformer:r36.3.0
 
 # Non-interactive
 ENV DEBIAN_FRONTEND=noninteractive
@@ -33,11 +33,14 @@ RUN apt update && apt install -y \
     python3-argcomplete \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget https://developer.download.nvidia.com/compute/redist/jp/v60/tensorflow/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl -O /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
-# RUN pip install --upgrade pip setuptools wheel packaging
-RUN pip install -v /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
-COPY requirements.txt /tmp/requirements.txt
-RUN pip install -v -r /tmp/requirements.txt
+# RUN wget https://developer.download.nvidia.com/compute/redist/jp/v60/tensorflow/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl -O /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
+# # RUN pip install --upgrade pip setuptools wheel packaging
+# RUN pip install -v /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
+
+# ARG R=1
+
+# COPY requirements.txt /tmp/requirements.txt
+# RUN pip install -v -r /tmp/requirements.txt
 
 
 COPY ./setup.sh /tmp/setup.sh
