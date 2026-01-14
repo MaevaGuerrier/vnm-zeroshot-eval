@@ -31,16 +31,17 @@ RUN apt update && apt install -y \
     ros-humble-rmw-zenoh-cpp \
     python3-colcon-common-extensions \
     python3-argcomplete \
+    tmux \
     && rm -rf /var/lib/apt/lists/*
 
-# RUN wget https://developer.download.nvidia.com/compute/redist/jp/v60/tensorflow/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl -O /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
-# # RUN pip install --upgrade pip setuptools wheel packaging
-# RUN pip install -v /tmp/tensorflow-2.15.0+nv24.05-cp310-cp310-linux_aarch64.whl
+RUN pip install --no-cache-dir --index-url https://pypi.org/simple \
+    onnx \
+    pycuda
 
-# ARG R=1
 
-# COPY requirements.txt /tmp/requirements.txt
-# RUN pip install -v -r /tmp/requirements.txt
+RUN wget https://nvidia.box.com/shared/static/6l0u97rj80ifwkk8rqbzj1try89fk26z.whl -O onnxruntime_gpu-1.19.0-cp310-cp310-linux_aarch64.whl && \
+    pip install --no-deps onnxruntime_gpu-1.19.0-cp310-cp310-linux_aarch64.whl && \
+    rm onnxruntime_gpu-1.19.0-cp310-cp310-linux_aarch64.whl 
 
 
 COPY ./setup.sh /tmp/setup.sh
