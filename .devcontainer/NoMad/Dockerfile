@@ -1,6 +1,4 @@
 # FROM img_name:tag
-# dustynv/l4t-pytorch:2.2-r35.4.1 
-# dustynv/pytorch:2.1-r36.2.0
 FROM dustynv/l4t-pytorch:r36.2.0
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -92,7 +90,7 @@ RUN wget https://nvidia.box.com/shared/static/6l0u97rj80ifwkk8rqbzj1try89fk26z.w
     pip install --no-deps onnxruntime_gpu-1.19.0-cp310-cp310-linux_aarch64.whl && \
     rm onnxruntime_gpu-1.19.0-cp310-cp310-linux_aarch64.whl 
 
-ARG CACHE_BUST=1
+ARG CACHE_BUST=2
 COPY ./setup.sh /tmp/setup.sh
 
 RUN chmod +x /tmp/setup.sh
