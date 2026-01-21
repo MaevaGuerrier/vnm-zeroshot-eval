@@ -2,8 +2,8 @@
 
 source /opt/ros/humble/setup.bash
 target="/workspace/.packages_nomad_ros2"
-export PYTHONPATH=$target:$PYTHONPATH
-export ROS_MASTER_URI=http://192.168.1.154:11311 # botman
-export ROS_IP=192.168.1.154
+export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+export ZENOH_ROUTER_CHECK_ATTEMPTS=-1
+export ZENOH_CONFIG_OVERRIDE='listen/endpoints=["tcp/0.0.0.0:0"];scouting/multicast/enabled=true'
 exec "$@"
     

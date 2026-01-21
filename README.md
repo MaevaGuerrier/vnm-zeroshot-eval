@@ -459,7 +459,7 @@ python collect_manual.py --habitat-config ../conf_habitat/config_habitat.yaml --
 
 # Record bags (topomap, deployment)
 
-
+# TODO put them all in a misc folder instead
 
 **record_topomap.launch**
 ```
@@ -528,3 +528,9 @@ python collect_manual.py --habitat-config ../conf_habitat/config_habitat.yaml --
 
 
 e.g., ```roslaunch record_bag.launch algo:=vint robot:=bunker env:=mist_office_sharp aug:=no_aug trial:=1```
+
+
+
+
+# ROS2 version 
+

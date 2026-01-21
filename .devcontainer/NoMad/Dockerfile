@@ -57,6 +57,7 @@ RUN apt update && apt install -y \
     ros-humble-ament-cmake \
     ros-humble-rmw-zenoh-cpp \
     ros-humble-cv-bridge \
+    ros-humble-nav-msgs \
     python3-colcon-common-extensions \
     python3-argcomplete \
     && rm -rf /var/lib/apt/lists/*
