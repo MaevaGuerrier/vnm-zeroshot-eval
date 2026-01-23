@@ -1,11 +1,25 @@
 # PROJECT
 
-metrics/*
-
+lib64
+pyvenv.cfg
+ttx.1
+*.h
+*.npy
 
 safeGNM/
-sim/*
+mist_sim_ws/*
 datasets/*
+sim/*
+
+crossformer/assets/chunk/
+ros/
+*.bag
+*.csv
+metrics/dataframes/
+*.png
+*.txt
+*.tum
+
 
 # For now when switching branch submodules are untracked and appears in the worktree
 ViNT_NaviD/*
