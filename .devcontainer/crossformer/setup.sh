@@ -1,11 +1,12 @@
 #!/bin/bash
 # source ~/.bashrc
 # source 
-export PYTHONPATH=/workspace/.packages_crossformer:$PYTHONPATH
+target_dir=/workspace/.packages_crossformer
+export PYTHONPATH=${target_dir}:$PYTHONPATH
 source /opt/ros/humble/setup.bash
-# source /workspace/ros2_ws/install/setup.bash
-# export RMW_IMPLEMENTATION=rmw_zenoh_cpp
-# export ZENOH_ROUTER_CHECK_ATTEMPTS=-1
-# export ZENOH_CONFIG_OVERRIDE='listen/endpoints=["tcp/0.0.0.0:0"];scouting/multicast/enabled=true'
+source /workspace/ros2_ws/install/setup.bash
+export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+export ZENOH_ROUTER_CHECK_ATTEMPTS=-1
+export ZENOH_CONFIG_OVERRIDE='listen/endpoints=["tcp/0.0.0.0:0"];scouting/multicast/enabled=true'
 
 exec "$@"
