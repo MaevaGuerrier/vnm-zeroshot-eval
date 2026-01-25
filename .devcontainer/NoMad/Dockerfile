@@ -22,6 +22,7 @@ RUN apt-get update \
     curl \
     swig \
     wget \
+    tmux \
     software-properties-common \
     apt-utils \
     python3-grpcio \
