@@ -23,4 +23,6 @@ LAUNCH_SCRIPT="navigate.sh"
 # Create aliases that pass predefined first argument and allow additional args
 alias bridger="cd ${LAUNCH_SCRIPT_DIR} && ./${LAUNCH_SCRIPT} onnx"
 
+alias creatopo="cd ${LAUNCH_SCRIPT_DIR} && ./create_topomap.sh"
+
 # Add more aliases as needed

@@ -5,8 +5,8 @@ target_dir="/workspace/.packages_naivibridger_ros2"
 source /opt/ros/humble/setup.bash
 export PYTHONPATH=${target_dir}:$PYTHONPATH
 
-# export ROS_MASTER_URI=http://192.168.1.178:11311 # BUNKER1
-# export ROS_MASTER_URI=http://192.168.1.139:11311 # BUNKER2 ASLAN
-# export ROS_IP=192.168.1.139
+export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+export ZENOH_ROUTER_CHECK_ATTEMPTS=-1
+export ZENOH_CONFIG_OVERRIDE='listen/endpoints=["tcp/0.0.0.0:0"];scouting/multicast/enabled=true'
 
 exec "$@"
