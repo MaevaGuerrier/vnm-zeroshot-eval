@@ -18,9 +18,17 @@ jobs:
           fetch-depth: 0        # full history, not just latest commit
           submodules: false     # submodules not needed for mirroring
 
+      - name: Debug secret
+        env:
+          TOKEN: ${{ secrets.PUBLIC_VNM_EVAL_TOKEN }}
+        run: |
+          echo "Token length: ${#TOKEN}"
+          echo "First 4 chars: ${TOKEN:0:4}"
+
       - name: Push branch to public mirror vnm-zeroshot-eval
         env:
           TOKEN: ${{ secrets.PUBLIC_VNM_EVAL_TOKEN }}
         run: |
           git remote add public https://MaevaGuerrier:${TOKEN}@github.com/MaevaGuerrier/vnm-zeroshot-eval.git
           git push public HEAD:refs/heads/${{ github.ref_name }}
+
