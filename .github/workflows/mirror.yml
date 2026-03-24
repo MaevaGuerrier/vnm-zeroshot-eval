@@ -15,18 +15,8 @@ jobs:
       - name: Checkout full history
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          submodules: false
-
-      - name: Debug token
-        env:
-          TOKEN: ${{ secrets.PUBLIC_VNM_EVAL_TOKEN }}
-        run: |
-          if [ -z "$TOKEN" ]; then
-            echo "TOKEN IS EMPTY - secret is not being read!"
-          else
-            echo "TOKEN is set and has length: ${#TOKEN}"
-          fi
+          fetch-depth: 0        # full history, not just latest commit
+          submodules: false     # submodules not needed for mirroring
 
       - name: Push branch to public mirror vnm-zeroshot-eval
         env:
