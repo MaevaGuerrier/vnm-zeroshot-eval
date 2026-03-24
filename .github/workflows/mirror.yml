@@ -1,5 +1,5 @@
 name: Mirror to Public Repo vnm-zeroshot-eval
-
+# see for troubleshooting: https://github.com/orgs/community/discussions/60392
 on:
   push:
     branches:
