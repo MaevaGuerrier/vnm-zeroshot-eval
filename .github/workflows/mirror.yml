@@ -18,7 +18,10 @@ jobs:
           fetch-depth: 0        # full history, not just latest commit
           submodules: false     # submodules not needed for mirroring
 
+
       - name: Push branch to public mirror vnm-zeroshot-eval
+        env:
+          TOKEN: ${{ secrets.PUBLIC_VNM_EVAL_TOKEN }}
         run: |
-          git remote add public https://x-access-token:${{ secrets.PUBLIC_VNM_EVAL_TOKEN }}@github.com/MaevaGuerrier/vnm-zeroshot-eval.git
+          git remote add public https://x-access-token:${TOKEN}@github.com/MaevaGuerrier/vnm-zeroshot-eval.git
           git push public ${{ github.ref_name }}
