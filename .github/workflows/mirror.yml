@@ -1,0 +1,26 @@
+name: Mirror to Public Repo vnm-zeroshot-eval
+
+on:
+  push:
+    branches:
+      - ros2/nomad
+      - ros2/navibridger
+      - bunker/crossformer
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0        # full history, not just latest commit
+          submodules: false     # submodules not needed for mirroring
+
+      - name: Push branch to public mirror vnm-zeroshot-eval
+        env:
+          PUBLIC_REPO: https://x-access-token:${{ secrets.PUBLIC_VNM_EVAL_TOKEN }}@github.com/MaevaGuerrier/vnm-zeroshot-eval.git
+        run: |
+          git remote add public $PUBLIC_REPO
+          git push public ${{ github.ref_name }}
