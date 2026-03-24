@@ -2,7 +2,7 @@ name: Mirror to Public Repo vnm-zeroshot-eval
 # see for troubleshooting: https://github.com/orgs/community/discussions/60392
 on:
   push:
-    branches: # Only put the branches you want to mirror
+    branches: # Branches you want to mirror
       - ros2/nomad
       - ros2/navibridger
       - bunker/crossformer
