@@ -1,8 +1,8 @@
 name: Mirror to Public Repo vnm-zeroshot-eval
-
+# see for troubleshooting: https://github.com/orgs/community/discussions/60392
 on:
   push:
-    branches:
+    branches: # Branches you want to mirror
       - ros2/nomad
       - ros2/navibridger
       - bunker/crossformer
@@ -16,16 +16,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: false
+          persist-credentials: false
 
-      - name: Mirror branch to public repo
-        uses: cpina/github-action-push-to-another-repository@main
+      - name: Push branch to public mirror
         env:
-          API_TOKEN_GITHUB: ${{ secrets.PUBLIC_VNM_EVAL_TOKEN }}
-        with:
-          source-directory: '.'
-          destination-github-username: 'MaevaGuerrier'
-          destination-repository-name: 'vnm-zeroshot-eval'
-          target-branch: ${{ github.ref_name }}
-          user-email: MaevaGuerrier@users.noreply.github.com
-          user-name: MaevaGuerrier
+          TOKEN: ${{ secrets.PUBLIC_VNM_EVAL_TOKEN }}
+        run: |
+          # 1. Setup the remote
+          git remote add public "https://x-access-token:${TOKEN}@github.com/MaevaGuerrier/vnm-zeroshot-eval.git"
+          
+          # 2. Push the current branch to the same branch name on the public repo
+          git push public HEAD:${{ github.ref_name }} --force
