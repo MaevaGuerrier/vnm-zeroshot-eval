@@ -1,26 +1,30 @@
 name: Mirror to Public Repo vnm-zeroshot-eval
-
+# see for troubleshooting: https://github.com/orgs/community/discussions/60392
 on:
   push:
-    branches:
+    branches: # Branches you want to mirror
       - ros2/nomad
       - ros2/navibridger
       - bunker/crossformer
 
 jobs:
-  mirror:
+  mirror: # if condition so that we dont activate workflow for public repo it will only be skipped
+    if: github.repository == 'MaevaGuerrier/SafeGNM' 
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout full history
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0        # full history, not just latest commit
-          submodules: false     # submodules not needed for mirroring
+          fetch-depth: 0
+          persist-credentials: false
 
-      - name: Push branch to public mirror vnm-zeroshot-eval
+      - name: Push branch to public mirror
         env:
-          PUBLIC_REPO: https://x-access-token:${{ secrets.PUBLIC_VNM_EVAL_TOKEN }}@github.com/MaevaGuerrier/vnm-zeroshot-eval.git
+          TOKEN: ${{ secrets.PUBLIC_VNM_EVAL_TOKEN }}
         run: |
-          git remote add public $PUBLIC_REPO
-          git push public ${{ github.ref_name }}
+          # 1. Setup the remote
+          git remote add public "https://x-access-token:${TOKEN}@github.com/MaevaGuerrier/vnm-zeroshot-eval.git"
+          
+          # 2. Push the current branch to the same branch name on the public repo
+          git push public HEAD:${{ github.ref_name }} --force
