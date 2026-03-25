@@ -8,7 +8,8 @@ on:
       - bunker/crossformer
 
 jobs:
-  mirror:
+  mirror: # if condition so that we dont activate workflow for public repo it will only be skipped
+    if: github.repository == 'MaevaGuerrier/SafeGNM' 
     runs-on: ubuntu-latest
 
     steps:
