@@ -29,7 +29,7 @@ alias vint="cd ${LAUNCH_SCRIPT_DIR} && ./${LAUNCH_SCRIPT} vint_onnx $@"
 alias nomad="cd ${LAUNCH_SCRIPT_DIR} && ./${LAUNCH_SCRIPT} nomad_onnx $@"
 alias metnet="cd ${LAUNCH_SCRIPT_DIR} && ./${LAUNCH_SCRIPT} nomad_metric $@"
 
-alias topo="cd ${LAUNCH_SCRIPT_DIR} && ./create_topomap.sh"
+alias topo="cd ${LAUNCH_SCRIPT_DIR} && ./create_topomap.sh $@"
 
 # Add more aliases as needed
 
