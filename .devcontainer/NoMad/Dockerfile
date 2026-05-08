@@ -88,11 +88,19 @@ RUN pip install --no-cache-dir --index-url https://pypi.org/simple \
     sympy 
 
 
-RUN wget https://nvidia.box.com/shared/static/6l0u97rj80ifwkk8rqbzj1try89fk26z.whl -O onnxruntime_gpu-1.19.0-cp310-cp310-linux_aarch64.whl && \
-    pip install --no-deps onnxruntime_gpu-1.19.0-cp310-cp310-linux_aarch64.whl && \
-    rm onnxruntime_gpu-1.19.0-cp310-cp310-linux_aarch64.whl 
+# RUN wget https://nvidia.box.com/shared/static/6l0u97rj80ifwkk8rqbzj1try89fk26z.whl -O onnxruntime_gpu-1.19.0-cp310-cp310-linux_aarch64.whl && \
+#     pip install --no-deps onnxruntime_gpu-1.19.0-cp310-cp310-linux_aarch64.whl && \
+#     rm onnxruntime_gpu-1.19.0-cp310-cp310-linux_aarch64.whl 
 
-ARG CACHE_BUST=2
+# RUN wget https://nvidia.box.com/shared/static/i7n40ki3pl2x57vyn4u7e9asyiqlnl7n.whl -O onnxruntime_gpu-1.17.0-cp310-cp310-linux_aarch64.whl && \
+#     pip install --no-deps onnxruntime_gpu-1.17.0-cp310-cp310-linux_aarch64.whl && \
+#     rm onnxruntime_gpu-1.17.0-cp310-cp310-linux_aarch64.whl 
+
+RUN wget https://nvidia.box.com/shared/static/48dtuob7meiw6ebgfsfqakc9vse62sg4.whl -O onnxruntime_gpu-1.18.0-cp310-cp310-linux_aarch64.whl && \
+    pip install --no-deps onnxruntime_gpu-1.18.0-cp310-cp310-linux_aarch64.whl && \
+    rm onnxruntime_gpu-1.18.0-cp310-cp310-linux_aarch64.whl 
+
+ARG CACHE_BUST=3
 COPY ./setup.sh /tmp/setup.sh
 
 RUN chmod +x /tmp/setup.sh
