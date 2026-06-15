@@ -32,8 +32,8 @@ This work provides a **comprehensive real-world evaluation** of five state-of-th
 ## TODOs 📝
 
 ### ONNX models
-- [] HF Datasets 
-- [] IEEE Data port if HF down
+- [ ] HF Datasets 
+- [ ] IEEE Data port if HF down
 
 ### Documentations
 - [ ] rviz remote visualizer 
@@ -189,7 +189,7 @@ This will initialize the required submodules and third-party dependencies.
 ```
 
 <p align="left">
-  <img src="medias/docker_menu.svg" alt="docker menu" width="20%"/>
+  <img src="medias/docker_menu.svg" alt="docker menu" width="40%"/>
 </p>
 
 
@@ -211,8 +211,8 @@ If the build fails, refer to the [Troubleshooting](#troubleshooting) section.
 > The remote visualizer can be used to for rviz2 (WIP)
 
 <p align="left">
-  <img src="medias/gnm_menu.svg" alt="gnm menu" width="20%"/>
-  <img src="medias/bridger_menu.svg" alt="docker menu" width="20%"/>
+  <img src="medias/gnm_menu.svg" alt="gnm menu" width="40%"/>
+  <img src="medias/bridger_menu.svg" alt="docker menu" width="40%"/>
 </p>
 
 
