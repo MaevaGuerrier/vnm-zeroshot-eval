@@ -263,10 +263,13 @@ All aliases follow command strcutrue:
 
 ## WIP - Dataset
 
-> **Dataset release coming soon.**
+> **Dataset explanation coming soon.**
 
 The evaluation dataset includes ROS/ROS2 bag files for all environments and all model deployments. (*We will provide a conversion tool to go from ROS to ROS2 and vice versa.*)
 Each trial logs: odometry, node predictions, goal detection events, CPU/GPU/memory usage, and inference time.
+
+The Dataset can be found [here](https://ieee-dataport.org/documents/can-vision-foundation-models-navigate-zero-shot-real-world-evaluation-and-lessons-learned).
+> Note: This is a partial release of the dataset due to privacy and anonymization issues. Some data has been temporarily withheld because it contains identifiable human faces and legible vehicle license plates. We are actively trying to safely anonymize the remaining data for a future update.
 
 ---
 
