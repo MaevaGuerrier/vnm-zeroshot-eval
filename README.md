@@ -156,7 +156,7 @@ Each branch follows a consistent structure:
 
 1. ```git clone git@github.com:MaevaGuerrier/vnm-zeroshot-eval.git```.
 2. Go to he branch for the model you intend to deploy (GNM, ViNT, NoMaD &longrightarrow; **branch - ros2/nomad**; NaviBridger &longrightarrow; **branch - ros2/navibridger**; &longrightarrow; **branch - bunker/crossformer**) ```git checkout {branch}```.
-
+3. Make sure you are at the clone git root where the README.md is and init submodules with ```./init_submodules.sh```. 
 
 ### Download Pretrained Weights
 
@@ -165,8 +165,9 @@ Download model weights (ONNX format) for GNM, ViNT, NoMaD, NaviBridger, and Cros
 [![models](https://img.shields.io/badge/models_onnx-link-green)](https://drive.google.com/drive/folders/11s3vYHmx7elXd8YxlTHuNcHSYYwudF6D?usp=drive_link)
 [![HF](https://img.shields.io/badge/🤗HuggingFace-link-coral)](https://huggingface.co/LearningMae/vnm_zeroshot_eval)
 
+Place the weights provided in the link (and configs if provided) in the directory ```src/[subfolder]/deployment/model_weights/```
 
-Our onnx models are made for **Nvidia Jetson Orin**, however we provide convertion script as well if your onnxruntime version or jetpack version clashes with each other. (**See the Troubleshooting section**)
+> Note Our onnx models are made for **Nvidia Jetson Orin**, however we provide convertion script as well if your onnxruntime version or jetpack version clashes with each other. (**See the Troubleshooting section**)
 
 
 ### Setup for Deployment
